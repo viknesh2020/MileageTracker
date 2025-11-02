@@ -3,581 +3,625 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vehicle Mileage Tracker</title>
-    
+    <title>Mileage Tracker</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Chart.js for charts -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+    <!-- Chart.js and date adapter -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
-    
-    <!-- ADDED: Chart.js Zoom Plugin -->
+    <!-- Chart.js zoom plugin -->
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
-    
-    <!-- PWA Manifest -->
-    <link rel="manifest" href="data:application/json,{
-        &quot;name&quot;: &quot;Mileage Tracker&quot;,
-        &quot;short_name&quot;: &quot;Mileage&quot;,
-        &quot;start_url&quot;: &quot;.&quot;,
-        &quot;display&quot;: &quot;standalone&quot;,
-        &quot;background_color&quot;: &quot;#111827&quot;,
-        &quot;theme_color&quot;: &quot;#14b8a6&quot;,
-        &quot;icons&quot;: [
-            { &quot;src&quot;: &quot;https://placehold.co/192x192/14b8a6/white?text=Fuel&font=inter&quot;, &quot;sizes&quot;: &quot;192x192&quot;, &quot;type&quot;: &quot;image/png&quot; },
-            { &quot;src&quot;: &quot;https://placehold.co/512x512/14b8a6/white?text=Fuel&font=inter&quot;, &quot;sizes&quot;: &quot;512x512&quot;, &quot;type&quot;: &quot;image/png&quot; }
-        ]
-    }">
-    
-    <!-- Custom Styles -->
+    <!-- Papaparse for CSV importing -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+
+    <!-- REMOVED PWA/Service Worker links that were causing errors -->
+    <link rel="icon" href="https://placehold.co/64x64/1f2937/ffffff?text=Fuel">
+
     <style>
-        /* Using Inter font as default */
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-        
         /* Custom scrollbar for a cleaner look */
         ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
+            width: 8px;
+            height: 8px;
         }
         ::-webkit-scrollbar-track {
             background: #1f2937; /* gray-800 */
         }
         ::-webkit-scrollbar-thumb {
-            background: #374151; /* gray-700 */
-            border-radius: 3px;
+            background: #4b5563; /* gray-600 */
+            border-radius: 4px;
         }
         ::-webkit-scrollbar-thumb:hover {
-            background: #4b5563; /* gray-600 */
+            background: #6b7280; /* gray-500 */
         }
 
-        /* Active tab style */
-        .tab-active {
-            border-color: #14b8a6; /* teal-500 */
-            color: #14b8a6; /* teal-500 */
-            background-color: #1f2937; /* gray-800 */
-        }
-        
         /* Modal styles */
         .modal {
             display: none;
             position: fixed;
-            z-index: 100;
+            z-index: 1000;
             left: 0;
             top: 0;
             width: 100%;
             height: 100%;
             overflow: auto;
             background-color: rgba(0, 0, 0, 0.7);
-            align-items: center;
-            justify-content: center;
+            backdrop-filter: blur(5px);
+            animation: fadeIn 0.3s ease-out;
         }
         .modal-content {
-            margin: auto;
-            padding: 24px;
-            border-radius: 8px;
+            position: relative;
+            margin: 10% auto;
+            padding: 2rem;
             width: 90%;
             max-width: 500px;
-            animation: modal-fade-in 0.3s ease-out;
+            border-radius: 0.75rem;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideIn {
+            from { transform: translateY(-30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
 
-        /* ADDED: Modal animation */
-        @keyframes modal-fade-in {
-            from {
-                opacity: 0;
-                transform: scale(0.95);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
+        /* Chart container for responsiveness */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            height: 400px; /* You can adjust this */
+        }
+
+        /* Custom form focus */
+        input:focus {
+            box-shadow: 0 0 0 3px rgba(20, 211, 211, 0.3); /* Teal focus ring */
+            border-color: #14d3d3; /* Teal border */
+        }
+
+        /* Active tab style */
+        .tab-btn.active {
+            border-bottom-color: #14d3d3; /* Teal */
+            color: #14d3d3;
         }
     </style>
+
+    <!-- REMOVED PWA Service Worker Registration script -->
     
-    <!-- Import Inter font -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- REMOVED Dummy service-worker.js script -->
+    
+    <!-- REMOVED Dummy manifest.json script -->
+    
+    <!-- REMOVED Virtual PWA file creation script -->
+    
+    <script>
+        // Set theme from Tailwind config
+        tailwind.config = {
+            darkMode: 'class', // 'class' enables manual dark mode
+            theme: {
+                extend: {
+                    colors: {
+                        teal: {
+                            '50': '#f0fdfa',
+                            '100': '#ccfbf1',
+                            '200': '#99f6e4',
+                            '300': '#5eead4',
+                            '400': '#2dd4bf',
+                            '500': '#14b8a6',
+                            '600': '#0d9488',
+                            '700': '#0f766e',
+                            '800': '#115e59',
+                            '900': '#134e4a',
+                            '950': '#042f2e',
+                        },
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                },
+            },
+        };
+    </script>
+    
 </head>
+<body class="bg-gray-900 text-gray-200 font-sans antialiased min-h-screen">
 
-<body class="bg-gray-900 text-gray-200 min-h-screen antialiased">
-
-    <div class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
-        
-        <!-- Header -->
-        <header class="mb-6 flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
-            <h1 class="text-3xl font-bold text-white">
-                <span class="text-teal-400">Mileage</span> Tracker
-            </h1>
-            
-            <!-- MODIFIED: Button Group -->
-            <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 w-full sm:w-auto">
-                <!-- ADDED: Import Button -->
-                <input type="file" id="import-file-input" class="hidden" accept=".csv">
-                <button id="import-csv" class="w-full sm:w-auto bg-teal-500 hover:bg-teal-600 text-white font-medium py-2 px-4 rounded-lg shadow-md transition duration-200 ease-in-out flex items-center justify-center space-x-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                      <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+    <!-- Header -->
+    <header class="bg-gray-800 shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Title -->
+                <div class="flex-shrink-0 flex items-center">
+                    <svg class="w-8 h-8 text-teal-400 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 14.25v2.25m3-4.5v4.5m3-6.75v6.75m3-9v9M6 20.25h12A2.25 2.25 0 0 0 20.25 18V6A2.25 2.25 0 0 0 18 3.75H6A2.25 2.25 0 0 0 3.75 6v12A2.25 2.25 0 0 0 6 20.25Z" />
                     </svg>
-                    <span>Import CSV</span>
-                </button>
+                    <h1 class="text-xl sm:text-2xl font-bold text-white">Mileage Tracker</h1>
+                </div>
                 
-                <button id="export-csv" class="w-full sm:w-auto bg-gray-700 hover:bg-gray-600 text-gray-200 font-medium py-2 px-4 rounded-lg shadow-md transition duration-200 ease-in-out flex items-center justify-center space-x-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                        <!-- ADDED: Missing SVG path -->
-                        <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
-                    </svg>
-                    <!-- ADDED: Missing span -->
-                    <span>Export to CSV</span>
-                </button>
-            </div>
-        </header> <!-- ADDED: Missing closing header tag -->
-
-        <!-- Tabs -->
-        <!-- ADDED: Re-created the nav section that was misplaced -->
-        <nav class="mb-6">
-            <div class="flex border-b border-gray-700">
-                <button data-tab="dashboard" class="tab-button tab-active text-lg font-medium py-3 px-6 -mb-px border-b-2 border-transparent hover:text-teal-400 transition duration-200">
-                    Dashboard
-                </button>
-                <button data-tab="add-entry" class="tab-button text-lg font-medium py-3 px-6 -mb-px border-b-2 border-transparent text-gray-400 hover:text-teal-400 transition duration-200">
-                    Add New Entry
-                </button>
-            </div>
-        </nav>
-
-        <!-- Main Content -->
-        <main>
-            <!-- Dashboard Tab -->
-            <div id="dashboard" class="tab-content space-y-6">
-                <!-- Stats Section -->
-                <section>
-                    <h2 class="text-2xl font-semibold text-white mb-4">Overall Stats</h2>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-                        <!-- Stat Card: Total KMs -->
-                        <div class="bg-gray-800 p-5 rounded-xl shadow-lg flex flex-col justify-between">
-                            <h3 class="text-sm font-medium text-gray-400 uppercase">Total Kilometers</h3>
-                            <p id="stat-total-kms" class="text-3xl font-bold text-white mt-2">0</p>
-                            <p class="text-sm text-gray-500 mt-1">km</p>
-                        </div>
-                        <!-- Stat Card: Total Volume -->
-                        <div class="bg-gray-800 p-5 rounded-xl shadow-lg flex flex-col justify-between">
-                            <h3 class="text-sm font-medium text-gray-400 uppercase">Total Petrol</h3>
-                            <p id="stat-total-volume" class="text-3xl font-bold text-white mt-2">0</p>
-                            <p class="text-sm text-gray-500 mt-1">liters</p>
-                        </div>
-                        <!-- Stat Card: Total Spend -->
-                        <div class="bg-gray-800 p-5 rounded-xl shadow-lg flex flex-col justify-between">
-                            <h3 class="text-sm font-medium text-gray-400 uppercase">Total Spend</h3>
-                            <p id="stat-total-spend" class="text-3xl font-bold text-white mt-2">0</p>
-                            <p class="text-sm text-gray-500 mt-1">Rupees</p>
-                        </div>
-                        <!-- Stat Card: Avg Mileage -->
-                        <div class="bg-gray-800 p-5 rounded-xl shadow-lg flex flex-col justify-between">
-                            <h3 class="text-sm font-medium text-gray-400 uppercase">Average Mileage</h3>
-                            <p id="stat-avg-mileage" class="text-3xl font-bold text-white mt-2">0</p>
-                            <p class="text-sm text-gray-500 mt-1">km / L</p>
-                        </div>
-                        <!-- Stat Card: Total Days -->
-                        <div class="bg-gray-800 p-5 rounded-xl shadow-lg flex flex-col justify-between">
-                            <h3 class="text-sm font-medium text-gray-400 uppercase">Total Days</h3>
-                            <p id="stat-total-days" class="text-3xl font-bold text-white mt-2">0</D>
-                            <p class="text-sm text-gray-500 mt-1">days tracked</p>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Charts Section -->
-                <section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <!-- Price Over Time Chart -->
-                    <div class="lg:col-span-2 bg-gray-800 p-5 rounded-xl shadow-lg">
-                        <!-- MODIFIED: Added Reset Zoom button -->
-                        <div class="flex justify-between items-center mb-4">
-                            <h3 class="text-xl font-semibold text-white">Petrol Price Over Time (₹/L)</h3>
-                            <button id="reset-zoom" class="hidden bg-gray-700 hover:bg-gray-600 text-xs text-gray-200 font-medium py-1 px-3 rounded-lg shadow-md transition duration-200 ease-in-out">
-                                Reset Zoom
-                            </button>
-                        </div>
-                        <div class="h-80 lg:h-96">
-                            <canvas id="price-chart"></canvas>
-                        </div>
-                    </div>
-                    <!-- Top 5 Mileage Chart -->
-                    <div class="lg:col-span-1 bg-gray-800 p-5 rounded-xl shadow-lg">
-                        <h3 class="text-xl font-semibold text-white mb-4">Top 5 Best Mileage (km/L)</h3>
-                        <div class="h-80 lg:h-96">
-                            <canvas id="mileage-chart"></canvas>
-                        </div>
-                    </div>
-                </section>
-            </div>
-
-            <!-- Add Entry Tab -->
-            <div id="add-entry" class="tab-content hidden">
-                <div class="max-w-2xl mx-auto bg-gray-800 p-6 sm:p-8 rounded-xl shadow-lg">
-                    <h2 class="text-2xl font-semibold text-white mb-6">Add New Petrol Fill</h2>
-                    <form id="add-entry-form" class="space-y-5">
-                        
-                        <div>
-                            <label for="filled-date" class="block text-sm font-medium text-gray-300 mb-1">Filled Date</label>
-                            <input type="date" id="filled-date" name="filled-date" required
-                                   class="w-full bg-gray-700 border border-gray-600 text-gray-200 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500">
-                        </div>
-                        
-                        <div>
-                            <p class="text-sm font-medium text-gray-300 mb-2">
-                                Kilometers Driven on Last Tank
-                            </p>
-                            <p class="text-xs text-gray-400 mb-2">
-                                Enter the total KMs from your trip meter for the tank you just finished (since <strong id="last-fill-date-label">N/A</strong>).
-                            </p>
-                            <input type="number" id="kms-driven" name="kms-driven" step="0.1" min="0" required placeholder="e.g., 345.5"
-                                   class="w-full bg-gray-700 border border-gray-600 text-gray-200 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500">
-                        </div>
-                        
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                            <div>
-                                <label for="price-per-liter" class="block text-sm font-medium text-gray-300 mb-1">Petrol Price (per Liter)</label>
-                                <div class="relative">
-                                    <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-gray-400">₹</span>
-                                    <input type="number" id="price-per-liter" name="price-per-liter" step="0.01" min="0" required placeholder="e.g., 95.40"
-                                           class="w-full pl-8 bg-gray-700 border border-gray-600 text-gray-200 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500">
-                                </div>
-                            </div>
-                            
-                            <div>
-                                <label for="volume" class="block text-sm font-medium text-gray-300 mb-1">Petrol Volume (Liters)</label>
-                                <input type="number" id="volume" name="volume" step="0.01" min="0" required placeholder="e.g., 7.5"
-                                       class="w-full bg-gray-700 border border-gray-600 text-gray-200 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500">
-                            </div>
-                        </div>
-                        
-                        <div>
-                            <button type="submit"
-                                    class="w-full bg-teal-500 hover:bg-teal-600 text-white font-bold text-lg py-3 px-6 rounded-lg shadow-lg transition duration-300 ease-in-out transform hover:-translate-y-0.5">
-                                Save Entry & Calculate
-                            </button>
-                        </div>
-                    </form>
+                <!-- Header Buttons -->
+                <div class="flex items-center space-x-2 sm:space-x-4">
+                    <!-- Import Button -->
+                    <label for="csv-import" class="cursor-pointer bg-teal-600 hover:bg-teal-700 text-white font-medium py-2 px-3 sm:px-4 rounded-lg transition duration-200 flex items-center text-sm sm:text-base">
+                        <svg class="w-5 h-5 mr-0 sm:mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m.75 12 3 3m0 0 3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+                        </svg>
+                        <span class="hidden sm:inline">Import CSV</span>
+                    </label>
+                    <input type="file" id="csv-import" accept=".csv" class="hidden">
+                    
+                    <!-- Export Button -->
+                    <button id="export-csv" class="bg-gray-700 hover:bg-gray-600 text-gray-200 font-medium py-2 px-3 sm:px-4 rounded-lg transition duration-200 flex items-center text-sm sm:text-base">
+                        <svg class="w-5 h-5 mr-0 sm:mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m-1.125 9 3 3m0 0 3-3m-3 3v-6.375m1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+                        </svg>
+                        <span class="hidden sm:inline">Export CSV</span>
+                    </button>
                 </div>
             </div>
-        </main>
-    </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <nav class="bg-gray-800 border-b-2 border-gray-700">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex space-x-4">
+                    <button id="tab-dashboard" class="tab-btn active text-gray-300 hover:text-teal-400 py-3 px-3 sm:px-4 text-sm sm:text-base font-medium border-b-2 border-transparent transition duration-150 ease-in-out">
+                        Dashboard
+                    </button>
+                    <button id="tab-add" class="tab-btn text-gray-300 hover:text-teal-400 py-3 px-3 sm:px-4 text-sm sm:text-base font-medium border-b-2 border-transparent transition duration-150 ease-in-out">
+                        Add New Entry
+                    </button>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Dashboard Tab -->
+        <div id="content-dashboard" class="container mx-auto p-4 sm:p-6 lg:p-8">
+            
+            <!-- Prompt for import -->
+            <div id="import-prompt" class_X="hidden bg-gray-800 border-l-4 border-teal-500 text-teal-100 p-4 rounded-lg shadow-lg mb-6" role="alert">
+                <div class="flex">
+                    <div class="py-1">
+                        <svg class="w-6 h-6 text-teal-500 mr-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="font-bold">Welcome to your Mileage Tracker!</p>
+                        <p class="text-sm">No data found. Please use the "Import CSV" button in the header to load your mileage data and get started.</p>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Stats Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 sm:gap-6 mb-6">
+                <!-- Total KMs -->
+                <div class="bg-gray-800 p-5 rounded-lg shadow-lg flex items-center space-x-4">
+                    <div class="flex-shrink-0 bg-gray-700 p-3 rounded-full">
+                        <svg class="w-6 h-6 text-teal-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.125-.504 1.125-1.125V14.25m-17.25 4.5v-1.875a3.375 3.375 0 0 1 3.375-3.375h1.5a1.125 1.125 0 0 1 1.125 1.125v-1.5a3.375 3.375 0 0 1 3.375-3.375H9.75" />
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="text-sm font-medium text-gray-400">Total Kilometers</div>
+                        <div id="stat-total-kms" class="text-2xl font-bold text-white">0</div>
+                    </div>
+                </div>
+                <!-- Total Volume -->
+                <div class="bg-gray-800 p-5 rounded-lg shadow-lg flex items-center space-x-4">
+                    <div class="flex-shrink-0 bg-gray-700 p-3 rounded-full">
+                        <svg class="w-6 h-6 text-teal-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.362 5.214A8.252 8.252 0 0 1 12 21 8.25 8.25 0 0 1 6.038 7.047 8.287 8.287 0 0 0 9 9.601a8.287 8.287 0 0 0 3.038-2.554A8.252 8.252 0 0 1 15.362 5.214Z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 18a.75.75 0 0 0 .75-.75V13.5m-1.5 0V13.5A.75.75 0 0 1 12 18Z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="text-sm font-medium text-gray-400">Total Volume (L)</div>
+                        <div id="stat-total-volume" class="text-2xl font-bold text-white">0</div>
+                    </div>
+                </div>
+                <!-- Total Spend -->
+                <div class="bg-gray-800 p-5 rounded-lg shadow-lg flex items-center space-x-4">
+                    <div class="flex-shrink-0 bg-gray-700 p-3 rounded-full">
+                        <svg class="w-6 h-6 text-teal-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6V5.25m0 0v1.5m0-1.5a.75.75 0 0 1 .75-.75h1.5a.75.75 0 0 1 .75.75v1.5a.75.75 0 0 1-.75.75h-1.5a.75.75 0 0 1-.75-.75v-1.5m9-3v.75a.75.75 0 0 1-.75.75h-1.5a.75.75 0 0 1-.75-.75V5.25m0 0v1.5m0-1.5a.75.75 0 0 1 .75-.75h1.5a.75.75 0 0 1 .75.75v1.5a.75.75 0 0 1-.75.75h-1.5a.75.75 0 0 1-.75-.75v-1.5m-6 0v.75a.75.75 0 0 1-.75.75h-1.5a.75.75 0 0 1-.75-.75V5.25m0 0v1.5m0-1.5a.75.75 0 0 1 .75-.75h1.5a.75.75 0 0 1 .75.75v1.5a.75.75 0 0 1-.75.75h-1.5a.75.75 0 0 1-.75-.75v-1.5M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm0 0v7.5m0-7.5H5.625c-.621 0-1.125.504-1.125 1.125v-1.5c0-.621.504-1.125 1.125-1.125H15Z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="text-sm font-medium text-gray-400">Total Spend (₹)</div>
+                        <div id="stat-total-spend" class="text-2xl font-bold text-white">0</div>
+                    </div>
+                </div>
+                <!-- Avg Mileage -->
+                <div class="bg-gray-800 p-5 rounded-lg shadow-lg flex items-center space-x-4">
+                    <div class="flex-shrink-0 bg-gray-700 p-3 rounded-full">
+                        <svg class="w-6 h-6 text-teal-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="text-sm font-medium text-gray-400">Avg. Mileage</div>
+                        <div id="stat-avg-mileage" class="text-2xl font-bold text-white">0</div>
+                    </div>
+                </div>
+                <!-- Total Days -->
+                <div class="bg-gray-800 p-5 rounded-lg shadow-lg flex items-center space-x-4">
+                    <div class="flex-shrink-0 bg-gray-700 p-3 rounded-full">
+                        <svg class="w-6 h-6 text-teal-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="text-sm font-medium text-gray-400">Total Days</div>
+                        <div id="stat-total-days" class="text-2xl font-bold text-white">0</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Price Chart (takes 2/3 width on large screens) -->
+                <div class="lg:col-span-2 bg-gray-800 p-4 sm:p-6 rounded-lg shadow-lg">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-lg sm:text-xl font-semibold text-white">Petrol Price (₹) Over Time</h2>
+                        <button id="reset-zoom" class="text-xs bg-gray-700 hover:bg-gray-600 text-gray-200 py-1 px-3 rounded-full transition duration-200">
+                            Reset Zoom
+                        </button>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="priceChart"></canvas>
+                    </div>
+                </div>
+                
+                <!-- Mileage Chart (takes 1/3 width on large screens) -->
+                <div class="bg-gray-800 p-4 sm:p-6 rounded-lg shadow-lg">
+                    <h2 class="text-lg sm:text-xl font-semibold text-white mb-4">Top 5 Best Mileage (Km/L)</h2>
+                    <div class="chart-container">
+                        <canvas id="mileageChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add New Entry Tab -->
+        <div id="content-add" class="hidden container mx-auto p-4 sm:p-6 lg:p-8">
+            <div class="max-w-xl mx-auto bg-gray-800 p-6 sm:p-8 rounded-lg shadow-lg">
+                <h2 class="text-2xl font-bold text-white mb-6">Add New Petrol Fill-up</h2>
+                
+                <form id="add-entry-form" class="space-y-6">
+                    <!-- Filled Date -->
+                    <div>
+                        <label for="filled-date" class="block text-sm font-medium text-gray-300 mb-2">Filled Date</label>
+                        <input type="date" id="filled-date" name="filled-date" required
+                               class="w-full bg-gray-700 border border-gray-600 text-gray-200 rounded-lg p-3 shadow-sm focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
+                    </div>
+
+                    <!-- Petrol Price -->
+                    <div>
+                        <label for="petrol-price" class="block text-sm font-medium text-gray-300 mb-2">Petrol Price per Liter (₹)</label>
+                        <input type="number" id="petrol-price" name="petrol-price" step="0.01" min="0" required
+                               placeholder="e.g., 102.50"
+                               class="w-full bg-gray-700 border border-gray-600 text-gray-200 rounded-lg p-3 shadow-sm focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
+                    </div>
+
+                    <!-- Petrol Volume -->
+                    <div>
+                        <label for="petrol-volume" class="block text-sm font-medium text-gray-300 mb-2">Petrol Volume (Liters)</label>
+                        <input type="number" id="petrol-volume" name="petrol-volume" step="0.01" min="0" required
+                               placeholder="e.g., 5.5"
+                               class="w-full bg-gray-700 border border-gray-600 text-gray-200 rounded-lg p-3 shadow-sm focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
+                    </div>
+
+                    <!-- Start KMS (Read-only) -->
+                    <div>
+                        <label for="start-kms" class="block text-sm font-medium text-gray-300 mb-2">Start KMS (Odometer)</label>
+                        <input type="number" id="start-kms" name="start-kms" readonly
+                               placeholder="From previous entry"
+                               class="w-full bg-gray-900 border border-gray-700 text-gray-400 rounded-lg p-3 shadow-sm cursor-not-allowed">
+                    </div>
+
+                    <!-- End KMS -->
+                    <div>
+                        <label for="end-kms" class="block text-sm font-medium text-gray-300 mb-2">End KMS (Odometer)</label>
+                        <input type="number" id="end-kms" name="end-kms" step="0.1" min="0" required
+                               placeholder="Current odometer reading"
+                               class="w-full bg-gray-700 border border-gray-600 text-gray-200 rounded-lg p-3 shadow-sm focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div>
+                        <button type="submit"
+                                class="w-full flex justify-center bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-4 rounded-lg shadow-lg transition duration-200 ease-in-out transform hover:-translate-y-0.5">
+                            Save Entry
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
 
     <!-- Success Modal -->
     <div id="success-modal" class="modal">
         <div class="modal-content bg-gray-800 shadow-2xl border border-gray-700">
             <div class="flex justify-between items-center mb-4">
                 <h3 class="text-2xl font-semibold text-white">Entry Saved!</h3>
-                <button id="close-modal" class="text-gray-400 hover:text-white">&times;</button>
+                <button id="modal-close" class="text-gray-400 hover:text-white text-3xl font-bold">&times;</button>
             </div>
             
-            <p class="text-lg text-gray-300 mb-6">Here are the calculations based on your new entry:</p>
-            
-            <div class="space-y-4">
-                <!-- Previous Fill Stats -->
-                <div class="bg-gray-700 p-4 rounded-lg">
-                    <h4 class="text-sm font-medium text-teal-400 uppercase mb-3">Previous Fill (Completed)</h4>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <span class="text-xs text-gray-400 block">Mileage</span>
-                            <span id="modal-mileage" class="text-xl font-bold text-white">0 km/L</span>
+            <div class="space-y-5">
+                <!-- Last Tank Stats -->
+                <div>
+                    <h4 class="text-sm font-medium text-teal-400 uppercase tracking-wider mb-2">Last Tank Summary</h4>
+                    <div class="bg-gray-700 p-4 rounded-lg space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-300">Mileage:</span>
+                            <span id="modal-mileage" class="text-xl font-bold text-white">0 Km/L</span>
                         </div>
-                        <div>
-                            <span class="text-xs text-gray-400 block">Tank Lasted</span>
-                            <span id="modal-days" class="text-xl font-bold text-white">0 days</span>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-300">KMs Driven:</span>
+                            <span id="modal-kms" class="text-lg font-medium text-white">0 Km</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-300">Days Lasted:</span>
+                            <span id="modal-days" class="text-lg font-medium text-white">0 days</span>
                         </div>
                     </div>
                 </div>
-                
-                <!-- New Fill Stats -->
-                <div class="bg-gray-700 p-4 rounded-lg">
-                    <h4 class="text-sm font-medium text-cyan-400 uppercase mb-3">New Fill (Current)</h4>
-                    <div>
-                        <span class="text-xs text-gray-400 block">Amount Spent</span>
-                        <span id="modal-amount" class="text-xl font-bold text-white">₹0.00</span>
+
+                <!-- Current Fill-up Stats -->
+                <div>
+                    <h4 class="text-sm font-medium text-teal-400 uppercase tracking-wider mb-2">Current Fill-up</h4>
+                    <div class="bg-gray-700 p-4 rounded-lg space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-300">Total Cost:</span>
+                            <span id="modal-cost" class="text-xl font-bold text-white">₹0.00</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-300">Volume Filled:</span>
+                            <span id="modal-volume" class="text-lg font-medium text-white">0 L</span>
+                        </div>
                     </div>
                 </div>
             </div>
-            
-             <button id="modal-ok-button" class="mt-6 w-full bg-teal-500 hover:bg-teal-600 text-white font-bold py-3 px-6 rounded-lg transition duration-300">
+
+            <!-- OK Button -->
+            <button id="modal-ok" class="mt-8 w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-4 rounded-lg shadow-lg transition duration-200">
                 OK
-             </button>
+            </button>
         </div>
     </div>
-
-    <!-- ADDED: Import Confirmation Modal -->
+    
+    <!-- Import Confirmation Modal -->
     <div id="import-modal" class="modal">
         <div class="modal-content bg-gray-800 shadow-2xl border border-gray-700">
-            <h3 class="text-2xl font-semibold text-white mb-4">Import Data</h3>
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-2xl font-semibold text-white">Confirm Import</h3>
+                <button id="import-cancel" class="text-gray-400 hover:text-white text-3xl font-bold">&times;</button>
+            </div>
             <p class="text-lg text-gray-300 mb-6">
-                This will <strong class="text-red-400">overwrite all current data</strong> (including new entries) with the contents of the CSV file. Are you sure you want to proceed?
+                Are you sure? Importing will <strong class="text-red-400">overwrite all current data</strong> with the contents of the selected file.
             </p>
-            <div class="flex justify-end space-x-3">
-                <button id="import-cancel" class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-5 rounded-lg transition duration-300">
+            <div class="flex justify-end space-x-4">
+                <button id="import-cancel-btn" class="bg-gray-700 hover:bg-gray-600 text-gray-200 font-medium py-2 px-5 rounded-lg transition duration-200">
                     Cancel
                 </button>
-                <button id="import-confirm" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-5 rounded-lg transition duration-300">
-                    Overwrite & Import
+                <button id="import-confirm" class="bg-teal-500 hover:bg-teal-600 text-white font-bold py-2 px-5 rounded-lg transition duration-200">
+                    Yes, Import
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- Main Application Script -->
     <script type="module">
-        // --- DATA ---
+        /* Main Application Script */
         
-        // This is the initial data parsed from your Excel sheet.
-        // All new data will be added to this list and saved in the browser.
-        const initialData = [
-            { "id": 1, "filledDate": "2017-01-19", "exhaustedDate": "2017-02-11", "amount": 500, "pricePerLiter": 70.61, "volume": 7.081149979, "totalKMs": 319.7, "days": 23, "mileage": 45.148034 },
-            { "id": 2, "filledDate": "2017-02-11", "exhaustedDate": "2017-03-06", "amount": 500, "pricePerLiter": 70.61, "volume": 7.081149979, "totalKMs": 337.7, "days": 23, "mileage": 47.689994 },
-            { "id": 3, "filledDate": "2017-03-06", "exhaustedDate": "2017-03-24", "amount": 500, "pricePerLiter": 74.97, "volume": 6.669334400, "totalKMs": 356.9, "days": 18, "mileage": 53.513586 },
-            { "id": 4, "filledDate": "2017-03-24", "exhaustedDate": "2017-04-07", "amount": 600, "pricePerLiter": 74.97, "volume": 8.003201281, "totalKMs": 370.5, "days": 14, "mileage": 46.293963 },
-            { "id": 5, "filledDate": "2017-04-07", "exhaustedDate": "2017-04-20", "amount": 500, "pricePerLiter": 70.18, "volume": 7.124536905, "totalKMs": 324.0, "days": 13, "mileage": 45.477464 },
-            { "id": 6, "filledDate": "2017-04-20", "exhaustedDate": "2017-05-09", "amount": 500, "pricePerLiter": 70.18, "volume": 7.124536905, "totalKMs": 351.7, "days": 19, "mileage": 49.364951 },
-            { "id": 7, "filledDate": "2017-05-09", "exhaustedDate": "2017-05-23", "amount": 500, "pricePerLiter": 69.56, "volume": 7.187008626, "totalKMs": 319.6, "days": 14, "mileage": 44.471644 },
-            { "id": 8, "filledDate": "2017-05-23", "exhaustedDate": "2017-06-08", "amount": 500, "pricePerLiter": 69.56, "volume": 7.187008626, "totalKMs": 327.9, "days": 16, "mileage": 45.623192 },
-            { "id": 9, "filledDate": "2017-06-08", "exhaustedDate": "2017-06-25", "amount": 500, "pricePerLiter": 66.62, "volume": 7.505253678, "totalKMs": 343.1, "days": 17, "mileage": 45.714440 },
-            { "id": 10, "filledDate": "2017-06-25", "exhaustedDate": "2017-07-13", "amount": 500, "pricePerLiter": 64.21, "volume": 7.787010590, "totalKMs": 346.0, "days": 18, "mileage": 44.433299 },
-            { "id": 11, "filledDate": "2017-07-13", "exhaustedDate": "2017-08-01", "amount": 500, "pricePerLiter": 64.21, "volume": 7.787010590, "totalKMs": 362.0, "days": 19, "mileage": 46.488665 },
-            { "id": 12, "filledDate": "2017-08-01", "exhaustedDate": "2017-08-16", "amount": 500, "pricePerLiter": 67.28, "volume": 7.431629013, "totalKMs": 362.4, "days": 15, "mileage": 48.761858 },
-            { "id": 13, "filledDate": "2017-08-16", "exhaustedDate": "2017-09-03", "amount": 500, "pricePerLiter": 67.28, "volume": 7.431629013, "totalKMs": 354.5, "days": 18, "mileage": 47.701149 },
-            { "id": 14, "filledDate": "2017-09-03", "exhaustedDate": "2017-09-17", "amount": 500, "pricePerLiter": 69.69, "volume": 7.174629933, "totalKMs": 339.0, "days": 14, "mileage": 47.251342 },
-            { "id": 15, "filledDate": "2017-09-17", "exhaustedDate": "2017-10-18", "amount": 500, "pricePerLiter": 69.69, "volume": 7.174629933, "totalKMs": 317.0, "days": 31, "mileage": 44.183786 },
-            { "id": 16, "filledDate": "2017-10-18", "exhaustedDate": "2017-11-05", "amount": 500, "pricePerLiter": 72.48, "volume": 6.898454746, "totalKMs": 349.5, "days": 18, "mileage": 50.663950 },
-            { "id": 17, "filledDate": "2017-11-05", "exhaustedDate": "2017-11-23", "amount": 500, "pricePerLiter": 71.97, "volume": 6.947339169, "totalKMs": 326.3, "days": 18, "mileage": 46.969178 },
-            { "id": 18, "filledDate": "2017-11-23", "exhaustedDate": "2017-12-11", "amount": 500, "pricePerLiter": 71.97, "volume": 6.947339169, "totalKMs": 318.2, "days": 18, "mileage": 45.805566 },
-            { "id": 19, "filledDate": "2017-12-11", "exhaustedDate": "2017-12-29", "amount": 500, "pricePerLiter": 71.39, "volume": 7.003782042, "totalKMs": 323.8, "days": 18, "mileage": 46.232074 },
-            { "id": 20, "filledDate": "2017-12-29", "exhaustedDate": "2018-01-16", "amount": 500, "pricePerLiter": 71.39, "volume": 7.003782042, "totalKMs": 330.3, "days": 18, "mileage": 47.160161 },
-            { "id": 21, "filledDate": "2018-01-16", "exhaustedDate": "2018-02-02", "amount": 500, "pricePerLiter": 72.63, "volume": 6.884207628, "totalKMs": 317.4, "days": 17, "mileage": 46.105432 },
-            { "id": 22, "filledDate": "2018-02-02", "exhaustedDate": "2018-02-22", "amount": 500, "pricePerLiter": 73.50, "volume": 6.802721088, "totalKMs": 334.5, "days": 20, "mileage": 49.171449 },
-            { "id": 23, "filledDate": "2018-02-22", "exhaustedDate": "2018-03-14", "amount": 500, "pricePerLiter": 73.50, "volume": 6.802721088, "totalKMs": 315.0, "days": 20, "mileage": 46.304568 },
-            { "id": 24, "filledDate": "2018-03-14", "exhaustedDate": "2018-04-04", "amount": 500, "pricePerLiter": 75.07, "volume": 6.660450246, "totalKMs": 321.5, "days": 21, "mileage": 48.269490 },
-            { "id": 25, "filledDate": "2018-04-04", "exhaustedDate": "2018-04-20", "amount": 500, "pricePerLiter": 75.98, "volume": 6.580679126, "totalKMs": 331.5, "days": 16, "mileage": 50.374945 },
-            { "id": 26, "filledDate": "2018-04-20", "exhaustedDate": "2018-05-09", "amount": 500, "pricePerLiter": 77.58, "volume": 6.444960041, "totalKMs": 338.0, "days": 19, "mileage": 52.443171 },
-            { "id": 27, "filledDate": "2018-05-09", "exhaustedDate": "2018-05-27", "amount": 500, "pricePerLiter": 77.58, "volume": 6.444960041, "totalKMs": 321.1, "days": 18, "mileage": 49.822295 },
-            { "id": 28, "filledDate": "2018-05-27", "exhaustedDate": "2018-06-11", "amount": 500, "pricePerLiter": 78.89, "volume": 6.337938902, "totalKMs": 322.1, "days": 15, "mileage": 50.821420 }
-        ];
-
-        // --- GLOBAL STATE ---
+        // --- DATA ---
         let mileageData = [];
         let priceChart = null;
         let mileageChart = null;
-        const storageKey = 'mileageTrackerData';
-        let fileToImport = null; // ADDED: To hold file during confirmation
 
-        // --- UTILITY FUNCTIONS ---
+        // --- CONSTANTS ---
+        const DB_NAME = 'mileageTrackerDB';
+        const STORE_NAME = 'mileageStore';
 
-        /**
-         * Formats a number as Indian Rupees (₹)
-         * @param {number} num - The number to format
-         * @returns {string} - Formatted currency string
-         */
-        function formatCurrency(num) {
-            return new Intl.NumberFormat('en-IN', {
-                style: 'currency',
-                currency: 'INR',
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-            }).format(num);
-        }
-
-        /**
-         * Formats a number to 1 decimal place
-         * @param {number} num - The number to format
-         * @returns {string} - Formatted number string
-         */
-        function formatNumber(num, decimals = 1) {
-            return num.toLocaleString('en-IN', {
-                minimumFractionDigits: decimals,
-                maximumFractionDigits: decimals,
-            });
-        }
-        
-        /**
-         * Calculates the difference in days between two date strings
-         * @param {string} dateStr1 - YYYY-MM-DD
-         * @param {string} dateStr2 - YYYY-MM-DD
-         * @returns {number} - Number of days
-         */
-         function getDayDiff(dateStr1, dateStr2) {
-            const date1 = new Date(dateStr1);
-            const date2 = new Date(dateStr2);
+        // --- UTILS ---
+        const el = (id) => document.getElementById(id);
+        const formatNum = (num, decimals = 2) => (num || 0).toFixed(decimals);
+        const formatInt = (num) => (num || 0).toFixed(0);
+        const parseDate = (dateStr) => {
+            // Handles "YYYY-MM-DD"
+            if (!dateStr || dateStr.length < 10) return null;
+            return new Date(dateStr.substring(0, 10));
+        };
+        const diffDays = (date1, date2) => {
+            if (!date1 || !date2) return 0;
             const diffTime = Math.abs(date2.getTime() - date1.getTime());
             return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        };
+        const todayDateString = () => new Date().toISOString().split('T')[0];
+
+        // --- DATABASE (IndexedDB) ---
+        let db;
+        function initDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(DB_NAME, 1);
+                
+                request.onupgradeneeded = (event) => {
+                    const db = event.target.result;
+                    if (!db.objectStoreNames.contains(STORE_NAME)) {
+                        db.createObjectStore(STORE_NAME, { keyPath: 'id', autoIncrement: true });
+                    }
+                };
+                
+                request.onsuccess = (event) => {
+                    db = event.target.result;
+                    console.log('Database initialized');
+                    resolve(db);
+                };
+                
+                request.onerror = (event) => {
+                    console.error('Database error:', event.target.error);
+                    reject(event.target.error);
+                };
+            });
+        }
+
+        function saveData(data) {
+            return new Promise((resolve, reject) => {
+                if (!db) return reject('DB not initialized');
+                
+                const transaction = db.transaction([STORE_NAME], 'readwrite');
+                const store = transaction.objectStore(STORE_NAME);
+                
+                // Clear existing data first
+                const clearRequest = store.clear();
+                
+                clearRequest.onsuccess = () => {
+                    // Add new data
+                    let i = 0;
+                    function addNext() {
+                        if (i < data.length) {
+                            // Ensure ID is a number
+                            data[i].id = Number(data[i].id);
+                            const addRequest = store.add(data[i]);
+                            addRequest.onsuccess = addNext;
+                            addRequest.onerror = reject;
+                            i++;
+                        } else {
+                            resolve();
+                        }
+                    }
+                    addNext();
+                };
+                clearRequest.onerror = reject;
+            });
+        }
+
+        function loadData() {
+            return new Promise((resolve, reject) => {
+                if (!db) return reject('DB not initialized');
+                
+                const transaction = db.transaction([STORE_NAME], 'readonly');
+                const store = transaction.objectStore(STORE_NAME);
+                const request = store.getAll();
+                
+                request.onsuccess = (event) => {
+                    resolve(event.target.result);
+                };
+                
+                request.onerror = (event) => {
+                    reject(event.target.error);
+                };
+            });
+        }
+
+        // --- STATE & RENDER ---
+        
+        function processData(data) {
+            // Sort data by 'Filled' date to ensure correct order
+            return data
+                .filter(d => d.Filled && d['Start KMS'] !== undefined) // Ensure essential data exists
+                .map(d => ({
+                    // Convert all fields to appropriate types
+                    id: Number(d.id),
+                    Filled: parseDate(d.Filled),
+                    Exhausted: parseDate(d.Exhausted),
+                    'Filled Amount': Number(d['Filled'] || d['Filled Amount']), // Handle CSV header variations
+                    'Per litre price': Number(d['Per litre price']),
+                    'Volume (Ltr)': Number(d['Volume (Ltr)']),
+                    'Start KMS': Number(d['Start KMS']),
+                    'End KMS': Number(d['End KMS']),
+                    'Total': Number(d['Total']),
+                    'Days': Number(d['Days']),
+                    'Mileage(Km/Ltr)': Number(d['Mileage(Km/Ltr)'])
+                }))
+                .sort((a, b) => a.Filled.getTime() - b.Filled.getTime());
+        }
+
+        function updateUI(data) {
+            if (!data || data.length === 0) {
+                el('import-prompt').style.display = 'block';
+                return;
+            }
+            el('import-prompt').style.display = 'none';
+            
+            mileageData = processData(data);
+            
+            updateStats(mileageData);
+            renderCharts(mileageData);
+            updateFormState(mileageData);
+        }
+
+        function updateStats(data) {
+            const completedEntries = data.filter(d => d.Total > 0 && d['Mileage(Km/Ltr)'] > 0);
+            
+            const totalKms = completedEntries.reduce((sum, d) => sum + d.Total, 0);
+            const totalVolume = completedEntries.reduce((sum, d) => sum + d['Volume (Ltr)'], 0);
+            const totalSpend = data.reduce((sum, d) => sum + (d['Filled Amount'] || (d['Per litre price'] * d['Volume (Ltr)'])), 0);
+            const totalDays = completedEntries.reduce((sum, d) => sum + d.Days, 0);
+            
+            // Calculate average mileage only from valid entries
+            const avgMileage = totalVolume > 0 ? (totalKms / totalVolume) : 0;
+
+            el('stat-total-kms').textContent = formatInt(totalKms) + ' Km';
+            el('stat-total-volume').textContent = formatInt(totalVolume) + ' L';
+            el('stat-total-spend').textContent = '₹' + formatInt(totalSpend);
+            el('stat-avg-mileage').textContent = formatNum(avgMileage, 1) + ' Km/L';
+            el('stat-total-days').textContent = formatInt(totalDays);
+        }
+
+        function updateFormState(data) {
+            if (data.length === 0) {
+                el('start-kms').value = 0;
+                return;
+            }
+            // Get the very last entry (which should be the open one)
+            const lastEntry = data[data.length - 1];
+            el('start-kms').value = lastEntry['End KMS'];
+            
+            // Pre-fill price from last entry
+            if (lastEntry['Per litre price'] > 0) {
+                el('petrol-price').value = lastEntry['Per litre price'];
+            }
         }
         
-        /**
-         * Formats a YYYY-MM-DD date to a more readable format
-         * @param {string} dateStr - YYYY-MM-DD
-         * @returns {string} - e.g., "27-May-2018"
-         */
-        function formatReadableDate(dateStr) {
-            if (!dateStr) return 'N/A';
-            const date = new Date(dateStr);
-            const options = { day: 'numeric', month: 'short', year: 'numeric' };
-            return date.toLocaleDateString('en-GB', options).replace(/ /g, '-');
-        }
+        function renderCharts(data) {
+            const completedEntries = data.filter(d => d.Total > 0 && d.Filled);
+            
+            /*
+             * CHART 1: PETROL PRICE OVER TIME
+             */
+            const priceData = data
+                .filter(d => d.Filled && d['Per litre price'] > 0)
+                .map(d => ({
+                    x: d.Filled,
+                    y: d['Per litre price']
+                }));
 
-        // --- DATA LOGIC ---
-
-        /**
-         * Loads data from localStorage or uses initialData if empty
-         */
-        function loadData() {
-            const savedData = localStorage.getItem(storageKey);
-            if (savedData) {
-                mileageData = JSON.parse(savedData);
-            } else {
-                mileageData = [...initialData];
-                saveData(); // Save initial data to storage
+            const priceCtx = el('priceChart').getContext('2d');
+            if (priceChart) {
+                priceChart.destroy();
             }
-        }
-
-        /**
-         * Saves the current mileageData array to localStorage
-         */
-        function saveData() {
-            localStorage.setItem(storageKey, JSON.stringify(mileageData));
-        }
-
-        /**
-         * Adds a new entry, updating the previous one
-         * @param {object} formData - { filledDate, kmsDriven, pricePerLiter, volume }
-         * @returns {object} - { prevEntryStats, newEntryStats }
-         */
-        function processNewEntry(formData) {
-            const lastEntry = mileageData[mileageData.length - 1];
-            
-            // 1. Update the last entry
-            // ADDED: Check if lastEntry exists
-            if (!lastEntry) {
-                console.error("No data available to update. Please import data or add an entry.");
-                // We can't use alert, so maybe show a custom error modal?
-                // For now, just log and return
-                return;
-            }
-            
-            lastEntry.exhaustedDate = formData.filledDate;
-            lastEntry.totalKMs = formData.kmsDriven;
-            lastEntry.days = getDayDiff(lastEntry.filledDate, lastEntry.exhaustedDate);
-            lastEntry.mileage = lastEntry.totalKMs / lastEntry.volume;
-            
-            // 2. Create the new entry
-            const newAmount = formData.pricePerLiter * formData.volume;
-            const newEntry = {
-                id: lastEntry.id + 1,
-                filledDate: formData.filledDate,
-                pricePerLiter: formData.pricePerLiter,
-                volume: formData.volume,
-                amount: newAmount,
-                exhaustedDate: null,
-                totalKMs: null,
-                days: null,
-                mileage: null
-            };
-            
-            // 3. Add new entry to our data
-            mileageData.push(newEntry);
-            
-            // 4. Save to localStorage
-            saveData();
-            
-            // 5. Return stats for the modal
-            return {
-                prevEntryStats: {
-                    mileage: lastEntry.mileage,
-                    days: lastEntry.days,
-                },
-                newEntryStats: {
-                    amount: newAmount,
-                }
-            };
-        }
-
-        // --- DASHBOARD RENDERING ---
-
-        /**
-         * Updates all stats and charts on the dashboard
-         */
-        function updateDashboard() {
-            // Get all entries *except* the last one (which is incomplete)
-            const completeEntries = mileageData.slice(0, -1);
-            
-            if (completeEntries.length === 0) {
-                console.log("No complete entries to display.");
-                // Handle empty dashboard state
-                document.getElementById('stat-total-kms').textContent = '0';
-                document.getElementById('stat-total-volume').textContent = '0';
-                document.getElementById('stat-total-spend').textContent = formatCurrency(0).replace('₹', '₹');
-                document.getElementById('stat-avg-mileage').textContent = '0.00';
-                document.getElementById('stat-total-days').textContent = '0';
-                
-                // Clear charts if they exist
-                if (priceChart) priceChart.destroy();
-                if (mileageChart) mileageChart.destroy();
-                
-                // Get last fill date if data exists at all
-                if (mileageData.length > 0) {
-                    const lastFillDate = mileageData[mileageData.length - 1].filledDate;
-                    document.getElementById('last-fill-date-label').textContent = formatReadableDate(lastFillDate);
-                } else {
-                    document.getElementById('last-fill-date-label').textContent = 'N/A';
-                }
-                return;
-            }
-
-            // 1. Calculate Stats
-            const totalKMs = completeEntries.reduce((sum, d) => sum + d.totalKMs, 0);
-            const totalVolume = completeEntries.reduce((sum, d) => sum + d.volume, 0);
-            const totalSpend = mileageData.reduce((sum, d) => sum + d.amount, 0); // Total spend includes the last fill
-            const avgMileage = totalKMs / totalVolume;
-            const totalDays = completeEntries.reduce((sum, d) => sum + d.days, 0);
-            
-            // 2. Update Stat DOM Elements
-            document.getElementById('stat-total-kms').textContent = formatNumber(totalKMs, 0);
-            document.getElementById('stat-total-volume').textContent = formatNumber(totalVolume, 0);
-            document.getElementById('stat-total-spend').textContent = formatCurrency(totalSpend).replace('₹', '₹');
-            document.getElementById('stat-avg-mileage').textContent = formatNumber(avgMileage, 2);
-            document.getElementById('stat-total-days').textContent = totalDays;
-            
-            // 3. Update Charts
-            updatePriceChart(mileageData);
-            updateMileageChart(completeEntries);
-            
-            // 4. Update "Add Entry" form label
-            const lastFillDate = mileageData[mileageData.length - 1].filledDate;
-            document.getElementById('last-fill-date-label').textContent = formatReadableDate(lastFillDate);
-        }
-
-        /**
-         * Updates the Price Over Time line chart
-         * @param {Array} data - All mileage data
-         */
-        function updatePriceChart(data) {
-            const ctx = document.getElementById('price-chart').getContext('2d');
-            
-            const chartData = {
-                labels: data.map(d => d.filledDate),
-                datasets: [{
-                    label: 'Price per Liter',
-                    data: data.map(d => ({ x: new Date(d.filledDate).getTime(), y: d.pricePerLiter })),
-                    borderColor: '#14b8a6', // teal-500
-                    backgroundColor: 'rgba(20, 184, 166, 0.1)',
-                    borderWidth: 2,
-                    pointBackgroundColor: '#14b8a6',
-                    pointRadius: 3,
-                    pointHoverRadius: 6,
-                    fill: true,
-                    tension: 0.3,
-                }]
-            };
-            
-            const config = {
+            priceChart = new Chart(priceCtx, {
                 type: 'line',
-                data: chartData,
+                data: {
+                    datasets: [{
+                        label: 'Price per Liter (₹)',
+                        data: priceData,
+                        borderColor: '#14b8a6', // teal-500
+                        backgroundColor: 'rgba(20, 184, 166, 0.1)',
+                        borderWidth: 2,
+                        pointRadius: 2,
+                        pointHoverRadius: 5,
+                        pointBackgroundColor: '#14b8a6',
+                        fill: true,
+                        tension: 0.1
+                    }]
+                },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
@@ -586,31 +630,32 @@
                             type: 'time',
                             time: {
                                 unit: 'month',
-                                tooltipFormat: 'MMM yyyy',
-                                displayFormats: {
-                                    month: 'MMM yyyy'
-                                }
+                                tooltipFormat: 'MMM d, yyyy'
                             },
                             title: {
-                                display: false,
-                            },
-                            grid: {
-                                color: 'rgba(255, 255, 255, 0.1)'
+                                display: true,
+                                text: 'Date',
+                                color: '#9ca3af' // gray-400
                             },
                             ticks: {
                                 color: '#9ca3af' // gray-400
+                            },
+                            grid: {
+                                color: '#374151' // gray-700
                             }
                         },
                         y: {
                             title: {
-                                display: false,
-                            },
-                            grid: {
-                                color: 'rgba(255, 255, 255, 0.1)'
+                                display: true,
+                                text: 'Price (₹)',
+                                color: '#9ca3af' // gray-400
                             },
                             ticks: {
                                 color: '#9ca3af', // gray-400
-                                callback: (value) => `₹${value.toFixed(0)}`
+                                callback: value => '₹' + value
+                            },
+                            grid: {
+                                color: '#374151' // gray-700
                             }
                         }
                     },
@@ -625,12 +670,14 @@
                             borderColor: '#374151', // gray-700
                             borderWidth: 1,
                             callbacks: {
-                                label: (context) => `Price: ${formatCurrency(context.parsed.y)}`,
-                                title: (context) => formatReadableDate(context[0].label)
+                                label: (context) => `Price: ₹${context.parsed.y.toFixed(2)}`
                             }
                         },
-                        // ADDED: Zoom plugin configuration
                         zoom: {
+                            pan: {
+                                enabled: true,
+                                mode: 'x',
+                            },
                             zoom: {
                                 wheel: {
                                     enabled: true,
@@ -639,59 +686,46 @@
                                     enabled: true
                                 },
                                 mode: 'x',
-                                onZoomComplete: () => {
-                                    document.getElementById('reset-zoom').classList.remove('hidden');
-                                }
                             },
-                            pan: {
-                                enabled: true,
-                                mode: 'x',
+                            limits: {
+                                x: { min: 'original', max: 'original' }
                             }
                         }
-                    },
-                    interaction: {
-                        mode: 'index',
-                        intersect: false,
                     }
                 }
-            };
-            
-            if (priceChart) {
-                priceChart.destroy();
-            }
-            priceChart = new Chart(ctx, config);
-        }
+            });
 
-        /**
-         * Updates the Top 5 Mileage bar chart
-         * @param {Array} data - *Complete* entries only
-         */
-        function updateMileageChart(data) {
-            const ctx = document.getElementById('mileage-chart').getContext('2d');
+            /*
+             * CHART 2: TOP 5 BEST MILEAGE
+             */
+            const topMileageData = completedEntries
+                .sort((a, b) => b['Mileage(Km/Ltr)'] - a['Mileage(Km/Ltr)'])
+                .slice(0, 5);
+
+            const mileageLabels = topMileageData.map(d => d.Exhausted ? d.Exhausted.toLocaleDateString('en-CA') : 'N/A');
+            const mileageValues = topMileageData.map(d => d['Mileage(Km/Ltr)']);
             
-            const sortedData = [...data].sort((a, b) => b.mileage - a.mileage);
-            const top5Data = sortedData.slice(0, 5);
-            
-            const chartData = {
-                labels: top5Data.map(d => formatReadableDate(d.exhaustedDate)),
-                datasets: [{
-                    label: 'Mileage (km/L)',
-                    data: top5Data.map(d => d.mileage),
-                    backgroundColor: [
-                        '#14b8a6', // teal-500
-                        '#06b6d4', // cyan-500
-                        '#0ea5e9', // sky-500
-                        '#3b82f6', // blue-500
-                        '#6366f1', // indigo-500
-                    ],
-                    borderRadius: 4,
-                    borderWidth: 0,
-                }]
-            };
-            
-            const config = {
+            const mileageCtx = el('mileageChart').getContext('2d');
+            if (mileageChart) {
+                mileageChart.destroy();
+            }
+            mileageChart = new Chart(mileageCtx, {
                 type: 'bar',
-                data: chartData,
+                data: {
+                    labels: mileageLabels,
+                    datasets: [{
+                        label: 'Mileage (Km/L)',
+                        data: mileageValues,
+                        backgroundColor: [
+                            '#14b8a6', // teal-500
+                            '#0d9488', // teal-600
+                            '#0f766e', // teal-700
+                            '#115e59', // teal-800
+                            '#134e4a', // teal-900
+                        ],
+                        borderRadius: 4
+                    }]
+                },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
@@ -699,363 +733,349 @@
                     scales: {
                         x: {
                             title: {
-                                display: false,
+                                display: true,
+                                text: 'Mileage (Km/L)',
+                                color: '#9ca3af'
                             },
-                            grid: {
-                                color: 'rgba(255, 255, 255, 0.1)'
-                            },
-                            ticks: {
-                                color: '#9ca3af' // gray-400
-                            },
-                            beginAtZero: true
+                            ticks: { color: '#9ca3af' },
+                            grid: { color: '#374151' }
                         },
                         y: {
                             title: {
-                                display: false,
+                                display: true,
+                                text: 'Tank Exhausted Date',
+                                color: '#9ca3af'
                             },
-                            grid: {
-                                display: false,
-                            },
-                            ticks: {
-                                color: '#9ca3af' // gray-400
-                            }
+                            ticks: { color: '#9ca3af' },
+                            grid: { display: false }
                         }
                     },
                     plugins: {
                         legend: {
-                            display: false,
+                            display: false
                         },
                         tooltip: {
-                            backgroundColor: '#1f2937', // gray-800
-                            titleColor: '#e5e7eb', // gray-200
-                            bodyColor: '#d1d5db', // gray-300
-                            borderColor: '#374151', // gray-700
+                            backgroundColor: '#1f2937',
+                            titleColor: '#e5e7eb',
+                            bodyColor: '#d1d5db',
+                            borderColor: '#374151',
                             borderWidth: 1,
                             callbacks: {
-                                label: (context) => `Mileage: ${formatNumber(context.parsed.x, 2)} km/L`,
-                                title: (context) => `Filled on: ${context[0].label}`
+                                title: (context) => `Exhausted: ${context[0].label}`,
+                                label: (context) => `Mileage: ${context.parsed.x.toFixed(2)} Km/L`
                             }
                         }
                     }
                 }
-            };
-            
-            if (mileageChart) {
-                mileageChart.destroy();
-            }
-            mileageChart = new Chart(ctx, config);
+            });
         }
 
-        // --- EVENT HANDLERS ---
+        // --- PARSING LOGIC ---
 
-        /**
-         * Handles tab switching
-         * @param {Event} e - Click event
-         */
-        function handleTabClick(e) {
-            const tabButtons = document.querySelectorAll('.tab-button');
-            const tabContents = document.querySelectorAll('.tab-content');
-            const targetTab = e.currentTarget.dataset.tab;
-
-            // Update button styles
-            tabButtons.forEach(btn => {
-                if (btn.dataset.tab === targetTab) {
-                    btn.classList.add('tab-active');
-                    btn.classList.remove('text-gray-400');
-                } else {
-                    btn.classList.remove('tab-active');
-                    btn.classList.add('text-gray-400');
-                }
-            });
-
-            // Show/hide content
-            tabContents.forEach(content => {
-                if (content.id === targetTab) {
-                    content.classList.remove('hidden');
-                } else {
-                    content.classList.add('hidden');
-                }
+        function parseCSV(file) {
+            return new Promise((resolve, reject) => {
+                Papa.parse(file, {
+                    header: true,
+                    skipEmptyLines: true,
+                    complete: (results) => {
+                        // Fix for CSVs that have a blank row after header
+                        const cleanData = results.data.filter(row => row.id); 
+                        if (cleanData.length > 0) {
+                            resolve(cleanData);
+                        } else {
+                            reject(new Error("No valid data found in CSV. Check format."));
+                        }
+                    },
+                    error: (error) => {
+                        reject(error);
+                    }
+                });
             });
         }
         
-        /**
-         * Handles the new entry form submission
-         * @param {Event} e - Submit event
-         */
-        function handleFormSubmit(e) {
-            e.preventDefault();
+        async function processImport() {
+            const fileInput = el('csv-import');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                // Use custom modal instead of alert
+                showModal('error-modal');
+                el('error-message').textContent = "No file selected.";
+                hideImportModal();
+                return;
+            }
+            
+            try {
+                const data = await parseCSV(file);
+                await saveData(data);
+                updateUI(data);
+                hideImportModal();
+                // Reset file input so user can re-import same file if needed
+                fileInput.value = ''; 
+            } catch (error) {
+                console.error("Error processing import:", error);
+                // Use custom modal instead of alert
+                showModal('error-modal');
+                el('error-message').textContent = "Error importing file: " + error.message;
+                hideImportModal();
+            }
+        }
+
+        // --- FORM LOGIC ---
+        
+        async function handleFormSubmit(event) {
+            event.preventDefault();
             
             if (mileageData.length === 0) {
-                // You can't add an entry if there's no data to begin with
-                // (Need a "first entry" form, but for now, rely on import)
-                console.error("No base data. Please import your CSV first.");
-                // TODO: Show an error modal
+                // Use custom modal instead of alert
+                showModal('error-modal');
+                el('error-message').textContent = "Please import your data before adding a new entry.";
                 return;
             }
 
-            const formData = {
-                filledDate: document.getElementById('filled-date').value,
-                kmsDriven: parseFloat(document.getElementById('kms-driven').value),
-                pricePerLiter: parseFloat(document.getElementById('price-per-liter').value),
-                volume: parseFloat(document.getElementById('volume').value),
+            // --- 1. Get data from form ---
+            const newEntry = {
+                'Filled': parseDate(el('filled-date').value),
+                'Per litre price': parseFloat(el('petrol-price').value),
+                'Volume (Ltr)': parseFloat(el('petrol-volume').value),
+                'Start KMS': parseFloat(el('start-kms').value),
+                'End KMS': parseFloat(el('end-kms').value)
             };
             
-            // Process the data
-            const stats = processNewEntry(formData);
-            
-            // Update dashboard
-            updateDashboard();
-            
-            // Show success modal
-            showSuccessModal(stats);
-            
-            // Reset form
-            e.target.reset();
-        }
-        
-        /**
-         * Shows the success modal with calculated stats
-         * @param {object} stats - { prevEntryStats, newEntryStats }
-         */
-        function showSuccessModal(stats) {
-            document.getElementById('modal-mileage').textContent = `${formatNumber(stats.prevEntryStats.mileage, 2)} km/L`;
-            document.getElementById('modal-days').textContent = `${stats.prevEntryStats.days} days`;
-            document.getElementById('modal-amount').textContent = formatCurrency(stats.newEntryStats.amount);
-            
-            document.getElementById('success-modal').style.display = 'flex';
-        }
-        
-        /**
-         * Hides the success modal
-         */
-        function hideSuccessModal() {
-            document.getElementById('success-modal').style.display = 'none';
-        }
+            // --- 2. Validate data ---
+            if (newEntry['End KMS'] <= newEntry['Start KMS']) {
+                // Use custom modal instead of alert
+                showModal('error-modal');
+                el('error-message').textContent = "End KMS must be greater than Start KMS.";
+                return;
+            }
+            if (!newEntry.Filled || !newEntry['Per litre price'] || !newEntry['Volume (Ltr)'] || !newEntry['End KMS']) {
+                // Use custom modal instead of alert
+                showModal('error-modal');
+                el('error-message').textContent = "Please fill out all fields correctly.";
+                return;
+            }
 
-        /**
-         * Exports the current data to a CSV file
-         */
-        function exportToCSV() {
-            // Use all data, including the last incomplete entry
-            const dataToExport = mileageData;
+            // --- 3. Update the *previous* entry ---
+            let lastEntry = mileageData[mileageData.length - 1];
+            
+            lastEntry.Exhausted = newEntry.Filled;
+            lastEntry['End KMS'] = newEntry['End KMS']; // This seems wrong based on logic, let's fix.
+            
+            // --- LOGIC FIX ---
+            // The form's "Start KMS" is the *last* entry's "Start KMS".
+            // The form's "End KMS" is the *last* entry's "End KMS".
+            // The logic should be:
+            // 1. Get last entry.
+            // 2. Update it with form data.
+            // 3. Create a *new* entry.
+            
+            // Corrected Logic:
+            
+            // 1. Get data from form
+            const filledDate = parseDate(el('filled-date').value);
+            const price = parseFloat(el('petrol-price').value);
+            const volume = parseFloat(el('petrol-volume').value);
+            const startKms = parseFloat(el('start-kms').value); // This is the 'Start KMS' of the tank we are *finishing*
+            const endKms = parseFloat(el('end-kms').value); // This is the 'End KMS' of the tank we are *finishing*
+            
+            if (endKms <= startKms) {
+                // Use custom modal instead of alert
+                showModal('error-modal');
+                el('error-message').textContent = "End KMS must be greater than Start KMS.";
+                return;
+            }
 
-            // Define headers
-            const headers = [
-                "id", "filledDate", "exhaustedDate", "amount", "pricePerLiter",
-                "volume", "totalKMs", "days", "mileage"
-            ];
+            // 2. Find the last entry in our data and update it
+            let entryToUpdate = mileageData[mileageData.length - 1];
             
-            // Start CSV string with headers
-            let csvContent = "data:text/csv;charset=utf-8," + headers.join(",") + "\n";
-            
-            // Add rows
-            dataToExport.forEach(row => {
-                const values = headers.map(header => {
-                    let val = row[header];
-                    // Handle null/undefined values and wrap in quotes
-                    if (val === null || val === undefined) {
-                        val = "";
-                    }
-                    return `"${val}"`;
-                });
-                csvContent += values.join(",") + "\n";
-            });
-            
-            // Create and click download link
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", "mileage_data_export.csv");
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-        
-        // --- ADDED: IMPORT FUNCTIONS ---
+            // Check if it's the correct entry
+            if (entryToUpdate['Start KMS'] !== startKms) {
+                // Use custom modal instead of alert
+                showModal('error-modal');
+                el('error-message').textContent = "Data mismatch. Last entry's Start KMS doesn't match form. Please re-import and try again.";
+                return;
+            }
 
-        /**
-         * Handles file input change. Shows confirmation modal.
-         * @param {Event} e - Change event from file input
-         */
-        function handleFileSelect(e) {
-            if (e.target.files.length > 0) {
-                fileToImport = e.target.files[0];
-                document.getElementById('import-modal').style.display = 'flex';
+            entryToUpdate.Exhausted = filledDate;
+            entryToUpdate['End KMS'] = endKms;
+            entryToUpdate.Total = endKms - startKms;
+            entryToUpdate.Days = diffDays(entryToUpdate.Filled, entryToUpdate.Exhausted);
+            entryToUpdate['Mileage(Km/Ltr)'] = entryToUpdate.Total / entryToUpdate['Volume (Ltr)'];
+            
+            // --- 3. Create the *new* entry for this fill-up ---
+            const newId = Math.max(...mileageData.map(d => d.id)) + 1;
+            const newFillAmount = price * volume;
+
+            const newEntryData = {
+                id: newId,
+                Filled: filledDate,
+                Exhausted: null,
+                'Filled Amount': newFillAmount,
+                'Per litre price': price,
+                'Volume (Ltr)': volume,
+                'Start KMS': endKms, // The new start is the old end
+                'End KMS': 0, // Will be filled next time
+                Total: 0,
+                Days: 0,
+                'Mileage(Km/Ltr)': 0
+            };
+            
+            // --- 4. Save and update ---
+            const newData = [...mileageData.slice(0, -1), entryToUpdate, newEntryData];
+            
+            try {
+                await saveData(newData);
+                updateUI(newData);
+                
+                // --- 5. Show success modal ---
+                el('modal-mileage').textContent = `${formatNum(entryToUpdate['Mileage(Km/Ltr)'], 1)} Km/L`;
+                el('modal-kms').textContent = `${formatNum(entryToUpdate.Total, 1)} Km`;
+                el('modal-days').textContent = `${formatInt(entryToUpdate.Days)} days`;
+                el('modal-cost').textContent = `₹${formatNum(newFillAmount, 2)}`;
+                el('modal-volume').textContent = `${formatNum(volume, 2)} L`;
+                showModal('success-modal');
+                
+                // --- 6. Reset form ---
+                el('add-entry-form').reset();
+                el('filled-date').value = todayDateString();
+                // We already updated the form state (Start KMS) in updateUI()
+                
+                // Switch back to dashboard
+                showTab('dashboard');
+
+            } catch (error) {
+                console.error("Error saving new entry:", error);
+                // Use custom modal instead of alert
+                showModal('error-modal');
+                el('error-message').textContent = "Failed to save new entry.";
             }
         }
 
-        /**
-         * Hides the import modal
-         */
-        function hideImportModal() {
-            fileToImport = null;
-            document.getElementById('import-file-input').value = null; // Reset file input
-            document.getElementById('import-modal').style.display = 'none';
+
+        // --- MODAL CONTROLS ---
+        const showModal = (id) => el(id).style.display = 'block';
+        const hideModal = (id) => el(id).style.display = 'none';
+        const hideSuccessModal = () => hideModal('success-modal');
+        const hideImportModal = () => hideModal('import-modal');
+        const hideErrorModal = () => hideModal('error-modal');
+
+
+        // --- TAB CONTROLS ---
+        function showTab(tabName) {
+            el('content-dashboard').style.display = (tabName === 'dashboard' ? 'block' : 'none');
+            el('content-add').style.display = (tabName === 'add' ? 'block' : 'none');
+            
+            el('tab-dashboard').classList.toggle('active', tabName === 'dashboard');
+            el('tab-add').classList.toggle('active', tabName === 'add');
         }
 
-        /**
-         * Reads the file, parses it, and updates the app
-         */
-        function processImport() {
-            if (!fileToImport) return;
-
-            const reader = new FileReader();
+        // --- EVENT LISTENERS ---
+        function setupEventListeners() {
+            // Tabs
+            el('tab-dashboard').addEventListener('click', () => showTab('dashboard'));
+            el('tab-add').addEventListener('click', () => showTab('add'));
             
-            reader.onload = (e) => {
-                const csvText = e.target.result;
-                try {
-                    const newData = parseCsvData(csvText);
-                    if (newData.length > 0) {
-                        mileageData = newData;
-                        saveData();
-                        updateDashboard();
-                        console.log(`Successfully imported ${newData.length} entries.`);
-                    } else {
-                        console.error("No valid data found in CSV file.");
-                        // TODO: Show error modal
-                    }
-                } catch (error) {
-                    console.error("Failed to parse CSV file:", error);
-                    // TODO: Show error modal
-                } finally {
-                    hideImportModal();
-                }
-            };
-            
-            reader.onerror = () => {
-                console.error("Failed to read the file.");
-                hideImportModal();
-            };
-            
-            reader.readAsText(fileToImport);
-        }
-        
-        /**
-         * Parses the raw CSV text from the "Mileage.csv" file
-         * @param {string} csvText - The raw text content of the CSV
-         * @returns {Array} - An array of mileage data objects
-         */
-        function parseCsvData(csvText) {
-            const parsedData = [];
-            const lines = csvText.split('\n');
-            
-            // Start from line 5 (index 4) based on file structure
-            // S#,PETROL,,Price (Rs),,Volume (Ltr),Distance(Km),,,Days,Mileage(Km/Ltr)
-            // ,Filled,Exhausted,Filled,Per litre,,Start,End,Total
-            
-            // Find the first valid data line (header starts with "S#")
-            let dataStartIndex = lines.findIndex(line => line.startsWith('S#'));
-            if (dataStartIndex === -1) {
-                throw new Error("Could not find header row starting with 'S#'");
-            }
-            
-            // Actual data starts 2 rows after the "S#" header
-            dataStartIndex += 2;
-            
-            for (let i = dataStartIndex; i < lines.length; i++) {
-                const line = lines[i].trim();
-                if (!line) continue; // Skip empty lines
-                
-                const parts = line.split(',');
-                
-                // Check for a valid ID (S#)
-                const id = parseInt(parts[0], 10);
-                if (isNaN(id) || id === 0) {
-                    // Stop parsing if we hit the end of data (0s or NaN)
-                    break;
-                }
-                
-                // Check for valid date
-                if (!parts[1] || !parts[1].includes('-')) {
-                    continue; // Skip lines without a valid fill date
-                }
-
-                try {
-                    const entry = {
-                        id: id,
-                        filledDate: parts[1],
-                        exhaustedDate: parts[2] || null,
-                        amount: parseFloat(parts[3]) || 0,
-                        pricePerLiter: parseFloat(parts[4]) || 0,
-                        volume: parseFloat(parts[5]) || 0,
-                        totalKMs: parseFloat(parts[8]) || null, // [8] is "Total" KMs
-                        days: parseInt(parts[9], 10) || null,
-                        mileage: parseFloat(parts[10]) || null
-                    };
-                    
-                    // Add only if we have the core data
-                    if (entry.filledDate && entry.pricePerLiter && entry.volume) {
-                        parsedData.push(entry);
-                    }
-
-                } catch (e) {
-                    console.warn(`Skipping malformed row ${i + 1}: ${line}`, e);
-                }
-            }
-            
-            return parsedData;
-        }
-
-
-        // --- INITIALIZATION ---
-        
-        /**
-         * Main function to initialize the app
-         */
-        function init() {
-            // Load data
-            loadData();
-            
-            // Render dashboard
-            updateDashboard();
-            
-            // Set up event listeners
-            document.querySelectorAll('.tab-button').forEach(btn => {
-                btn.addEventListener('click', handleTabClick);
-            });
-            
-            document.getElementById('add-entry-form').addEventListener('submit', handleFormSubmit);
-            
-            // Modal close buttons
-            document.getElementById('close-modal').addEventListener('click', hideSuccessModal);
-            document.getElementById('modal-ok-button').addEventListener('click', hideSuccessModal);
-            
-            // Export button
-            document.getElementById('export-csv').addEventListener('click', exportToCSV);
-            
-            // --- ADDED: New Listeners ---
-            
-            // Zoom reset
-            document.getElementById('reset-zoom').addEventListener('click', () => {
+            // Chart Zoom
+            el('reset-zoom').addEventListener('click', () => {
                 if (priceChart) {
                     priceChart.resetZoom();
-                    document.getElementById('reset-zoom').classList.add('hidden');
                 }
             });
 
-            // Import buttons
-            document.getElementById('import-csv').addEventListener('click', () => {
-                document.getElementById('import-file-input').click();
-            });
-            document.getElementById('import-file-input').addEventListener('change', handleFileSelect);
+            // Modals
+            el('modal-close').addEventListener('click', hideSuccessModal);
+            el('modal-ok').addEventListener('click', hideSuccessModal);
+            el('error-modal-ok').addEventListener('click', hideErrorModal);
             
-            // Import modal controls
-            document.getElementById('import-cancel').addEventListener('click', hideImportModal);
-            document.getElementById('import-confirm').addEventListener('click', processImport);
+            // Import/Export
+            el('csv-import').addEventListener('change', () => {
+                if (el('csv-import').files.length > 0) {
+                    showModal('import-modal');
+                }
+            });
+            el('import-cancel').addEventListener('click', hideImportModal);
+            el('import-cancel-btn').addEventListener('click', hideImportModal);
+            el('import-confirm').addEventListener('click', processImport);
+            
+            el('export-csv').addEventListener('click', () => {
+                if (mileageData.length === 0) {
+                    // Use custom modal instead of alert
+                    showModal('error-modal');
+                    el('error-message').textContent = "No data to export.";
+                    return;
+                }
+                
+                // Manually format data for CSV to match original headers
+                const csvData = mileageData.map(d => ({
+                    id: d.id,
+                    Filled: d.Filled ? d.Filled.toISOString().split('T')[0] : '',
+                    Exhausted: d.Exhausted ? d.Exhausted.toISOString().split('T')[0] : '',
+                    'Filled': d['Filled Amount'], // This header is 'Filled' in the CSV, not 'Filled Amount'
+                    'Per litre price': d['Per litre price'],
+                    'Volume (Ltr)': d['Volume (Ltr)'],
+                    'Start KMS': d['Start KMS'],
+                    'End KMS': d['End KMS'],
+                    'Total': d.Total,
+                    'Days': d.Days,
+                    'Mileage(Km/Ltr)': d['Mileage(Km/Ltr)']
+                }));
 
-
-            // Set today's date in the form
-            const today = new Date().toISOString().split('T')[0];
-            const dateInput = document.getElementById('filled-date');
-            dateInput.value = today;
-            dateInput.max = today; // Prevent selecting future dates
+                const csv = Papa.unparse(csvData);
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                const url = URL.createObjectURL(blob);
+                link.setAttribute('href', url);
+                link.setAttribute('download', 'mileage_export.csv');
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            });
+            
+            // Form
+            el('add-entry-form').addEventListener('submit', handleFormSubmit);
         }
 
-        // Run the app once the DOM is loaded
-        document.addEventListener('DOMContentLoaded', init);
+        // --- INITIALIZATION ---
+        async function initApp() {
+            try {
+                // Add error modal to DOM
+                const errorModalHTML = `
+                <div id="error-modal" class="modal">
+                    <div class="modal-content bg-gray-800 shadow-2xl border border-red-700">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-2xl font-semibold text-red-400">Error</h3>
+                        </div>
+                        <p id="error-message" class="text-lg text-gray-300 mb-6">An unknown error occurred.</p>
+                        <div class="flex justify-end">
+                            <button id="error-modal-ok" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-5 rounded-lg transition duration-200">
+                                OK
+                            </button>
+                        </div>
+                    </div>
+                </div>`;
+                document.body.insertAdjacentHTML('beforeend', errorModalHTML);
 
-    </script>
+                await initDB();
+                const data = await loadData();
+                updateUI(data);
+                setupEventListeners();
+                
+                // Set today's date in the form
+                el('filled-date').value = todayDateString();
+                
+            } catch (error) {
+                console.error("Failed to initialize app:", error);
+                el('import-prompt').style.display = 'block';
+                el('import-prompt').innerHTML = '<p class="font-bold text-red-400">Error!</p><p class="text-sm text-red-200">Could not load database. App may not work correctly. Try refreshing. Error: ' + error.message + '</p>';
+            }
+        }
+
+        // Start the app
+        document.addEventListener('DOMContentLoaded', initApp);
+
+    </script> <!-- FIXED: Was </iascript> -->
 </body>
 </html>
-
 
