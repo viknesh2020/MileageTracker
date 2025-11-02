@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full bg-gray-100">
+<!-- Change base background color -->
+<html lang="en" class="h-full bg-neutral-950">
 
 <head>
     <meta charset="UTF-M">
@@ -14,19 +15,19 @@
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
 
     <style>
-        /* Custom scrollbar for aesthetics */
+        /* Custom scrollbar for dark theme */
         ::-webkit-scrollbar {
             width: 6px;
             height: 6px;
         }
 
         ::-webkit-scrollbar-thumb {
-            background: #888;
+            background: #555; /* Darker scrollbar thumb */
             border-radius: 10px;
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: #555;
+            background: #777;
         }
 
         /* Ensure smooth scrolling */
@@ -36,15 +37,18 @@
     </style>
 </head>
 
-<body class="h-full flex flex-col font-sans text-gray-900 antialiased">
+<!-- Change base text color -->
+<body class="h-full flex flex-col font-sans text-neutral-200 antialiased">
 
     <!-- Header -->
-    <header class="bg-gray-800 text-white shadow-md sticky top-0 z-50">
+    <!-- Updated header colors for dark theme -->
+    <header class="bg-neutral-900 text-white shadow-md sticky top-0 z-50 border-b border-neutral-800">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
                 <!-- Title -->
                 <div class="flex items-center">
-                    <svg class="h-8 w-8 text-teal-400 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none"
+                    <!-- Changed icon color to emerald -->
+                    <svg class="h-8 w-8 text-emerald-400 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none"
                         viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round"
                             d="M7.5 8.25h9m-9 3H12m-6.75 3h9m-9 3H12m-6.75 3h9m-9 3H12m-6.75 3h9m-9 3H12m-6.75 3h9m-9 3H12m6.3-15.187.01-.004c1.44-.002 2.843.297 4.126.865a7.5 7.5 0 0 1 2.22 2.22c.568 1.283.865 2.686.865 4.126s-.297 2.843-.865 4.126a7.5 7.5 0 0 1-2.22 2.22c-1.283.568-2.686.865-4.126.865-1.44.002-2.843-.297-4.126-.865a7.5 7.5 0 0 1-2.22-2.22c-.568-1.283-.865-2.686-.865-4.126s.297-2.843.865-4.126a7.5 7.5 0 0 1 2.22-2.22c1.283-.568 2.686.865 4.126-.865Z" />
@@ -53,8 +57,9 @@
                 </div>
                 <!-- Action Buttons -->
                 <div class="flex items-center space-x-2 sm:space-x-4">
+                    <!-- Changed button color to emerald -->
                     <button id="import-csv-btn"
-                        class="flex items-center bg-teal-500 hover:bg-teal-600 text-white font-semibold px-3 sm:px-4 py-2 rounded-lg shadow transition duration-150 ease-in-out">
+                        class="flex items-center bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-3 sm:px-4 py-2 rounded-lg shadow transition duration-150 ease-in-out">
                         <svg class="h-5 w-5 mr-0 sm:mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                             stroke-width="1.5" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round"
@@ -62,8 +67,9 @@
                         </svg>
                         <span class="hidden sm:inline">Import CSV</span>
                     </button>
+                    <!-- Kept export blue for visual distinction -->
                     <button id="export-csv-btn"
-                        class="flex items-center bg-blue-500 hover:bg-blue-600 text-white font-semibold px-3 sm:px-4 py-2 rounded-lg shadow transition duration-150 ease-in-out">
+                        class="flex items-center bg-blue-600 hover:bg-blue-700 text-white font-semibold px-3 sm:px-4 py-2 rounded-lg shadow transition duration-150 ease-in-out">
                         <svg class="h-5 w-5 mr-0 sm:mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                             stroke-width="1.5" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round"
@@ -77,15 +83,18 @@
     </header>
 
     <!-- Navigation Tabs -->
-    <nav class="bg-white shadow-md sticky top-16 z-40">
+    <!-- Updated tab colors for dark theme -->
+    <nav class="bg-neutral-900 shadow-md sticky top-16 z-40">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex -mb-px">
+                <!-- Active tab styles updated -->
                 <button id="tab-dashboard" data-tab="dashboard"
-                    class="tab-btn border-b-2 border-teal-500 text-teal-600 py-3 px-4 font-semibold text-sm sm:text-base">
+                    class="tab-btn border-b-2 border-emerald-500 text-emerald-400 py-3 px-4 font-semibold text-sm sm:text-base">
                     Dashboard
                 </button>
+                <!-- Inactive tab styles updated -->
                 <button id="tab-add" data-tab="add"
-                    class="tab-btn border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 py-3 px-4 font-semibold text-sm sm:text-base">
+                    class="tab-btn border-b-2 border-transparent text-neutral-400 hover:text-neutral-100 hover:border-neutral-700 py-3 px-4 font-semibold text-sm sm:text-base">
                     Add New Entry
                 </button>
             </div>
@@ -93,17 +102,19 @@
     </nav>
 
     <!-- Main Content -->
-    <main class="flex-1 overflow-y-auto bg-gray-100 p-4 sm:p-6 lg:p-8">
+    <!-- Updated main background color -->
+    <main class="flex-1 overflow-y-auto bg-neutral-950 p-4 sm:p-6 lg:p-8">
         <div class="container mx-auto">
 
             <!-- Dashboard Tab -->
             <div id="content-dashboard" class="tab-content space-y-6">
                 <!-- Welcome/No Data Message -->
+                <!-- Updated message colors for dark theme -->
                 <div id="no-data-message"
-                    class="hidden bg-teal-50 border-l-4 border-teal-400 p-4 rounded-md shadow">
+                    class="hidden bg-neutral-800 border-l-4 border-emerald-600 p-4 rounded-md shadow">
                     <div class="flex">
                         <div class="flex-shrink-0">
-                            <svg class="h-5 w-5 text-teal-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                            <svg class="h-5 w-5 text-emerald-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
                                 fill="currentColor">
                                 <path fill-rule="evenodd"
                                     d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
@@ -111,9 +122,9 @@
                             </svg>
                         </div>
                         <div class="ml-3">
-                            <p class="text-sm text-teal-700">
+                            <p class="text-sm text-emerald-300">
                                 Welcome! No data found. Please
-                                <button id="import-from-message-btn" class="font-bold underline hover:text-teal-900">
+                                <button id="import-from-message-btn" class="font-bold underline hover:text-emerald-100">
                                     import your CSV file
                                 </button>
                                 to get started.
@@ -125,40 +136,79 @@
                 <!-- Stats Grid -->
                 <div id="stats-grid" class="hidden grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                     <!-- Stat Card: Total KMs -->
-                    <div class="bg-white p-4 rounded-lg shadow-sm">
-                        <h3 class="text-sm font-medium text-gray-500 truncate">Total Kilometers</h3>
-                        <p id="stat-total-kms" class="mt-1 text-3xl font-semibold text-gray-900">0</p>
+                    <!-- Updated card styles for dark theme -->
+                    <div class="bg-neutral-900 border border-neutral-800 p-4 rounded-xl shadow-sm relative overflow-hidden">
+                        <!-- FIX: Changed class_A to class -->
+                        <!-- FIX: Updated icon, size, and opacity -->
+                        <div class="absolute top-4 right-4 text-neutral-700 opacity-30">
+                            <svg class="h-12 w-12" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0011.667 0l3.181-3.183m-4.994 0h-4.992" />
+                            </svg>
+                        </div>
+                        <h3 class="text-sm font-medium text-neutral-400 truncate">Total Kilometers</h3>
+                        <!-- FIX: Removed mt-1 for tighter grouping -->
+                        <p id="stat-total-kms" class="text-3xl font-semibold text-neutral-100">0</p>
                     </div>
                     <!-- Stat Card: Total Volume -->
-                    <div class="bg-white p-4 rounded-lg shadow-sm">
-                        <h3 class="text-sm font-medium text-gray-500 truncate">Total Volume (Ltr)</h3>
-                        <p id="stat-total-volume" class="mt-1 text-3xl font-semibold text-gray-900">0</p>
+                    <div class="bg-neutral-900 border border-neutral-800 p-4 rounded-xl shadow-sm relative overflow-hidden">
+                        <!-- FIX: Updated icon, size, and opacity -->
+                        <div class="absolute top-4 right-4 text-neutral-700 opacity-30">
+                            <svg class="h-12 w-12" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082M9.75 3.104a2.25 2.25 0 00-2.25 2.25c0 1.131.91 2.04 2.008 2.214M14.25 14.5l-4.1-3.879a2.25 2.25 0 01-.659-1.591V3.104m0 0c.251.023.501.05.75.082m0 0a2.25 2.25 0 012.25 2.25c0 1.131-.91 2.04-2.008 2.214m0 0L14.25 14.5M12 18.75a3.75 3.75 0 100-7.5 3.75 3.75 0 000 7.5z" />
+                            </svg>
+                        </div>
+                        <h3 class="text-sm font-medium text-neutral-400 truncate">Total Volume (Ltr)</h3>
+                        <!-- FIX: Removed mt-1 for tighter grouping -->
+                        <p id="stat-total-volume" class="text-3xl font-semibold text-neutral-100">0</p>
                     </div>
                     <!-- Stat Card: Total Spent -->
-                    <div class="bg-white p-4 rounded-lg shadow-sm">
-                        <h3 class="text-sm font-medium text-gray-500 truncate">Total Spent (Rs)</h3>
-                        <p id="stat-total-spent" class="mt-1 text-3xl font-semibold text-gray-900">0</p>
+                    <div class="bg-neutral-900 border border-neutral-800 p-4 rounded-xl shadow-sm relative overflow-hidden">
+                        <!-- FIX: Updated icon, size, and opacity -->
+                        <div class="absolute top-4 right-4 text-neutral-700 opacity-30">
+                            <svg class="h-12 w-12" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h6M3.75 16.5h16.5a1.5 1.5 0 001.5-1.5V6.75a1.5 1.5 0 00-1.5-1.5H3.75a1.5 1.5 0 00-1.5 1.5v8.25a1.5 1.5 0 001.5 1.5z" />
+                            </svg>
+                        </div>
+                        <h3 class="text-sm font-medium text-neutral-400 truncate">Total Spent (Rs)</h3>
+                        <!-- FIX: Removed mt-1 for tighter grouping -->
+                        <p id="stat-total-spent" class="text-3xl font-semibold text-neutral-100">0</p>
                     </div>
                     <!-- Stat Card: Average Mileage -->
-                    <div class="bg-white p-4 rounded-lg shadow-sm">
-                        <h3 class="text-sm font-medium text-gray-500 truncate">Average Mileage</h3>
-                        <p id="stat-avg-mileage" class="mt-1 text-3xl font-semibold text-gray-900">0</p>
+                    <div class="bg-neutral-900 border border-neutral-800 p-4 rounded-xl shadow-sm relative overflow-hidden">
+                        <!-- FIX: Updated icon, size, and opacity -->
+                        <div class="absolute top-4 right-4 text-neutral-700 opacity-30">
+                            <svg class="h-12 w-12" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" />
+                            </svg>
+                        </div>
+                        <h3 class="text-sm font-medium text-neutral-400 truncate">Average Mileage</h3>
+                        <!-- FIX: Removed mt-1 for tighter grouping -->
+                        <p id="stat-avg-mileage" class="text-3xl font-semibold text-neutral-100">0</p>
                     </div>
                     <!-- Stat Card: Total Days -->
-                    <div class="bg-white p-4 rounded-lg shadow-sm col-span-2 md:col-span-1 lg:col-span-1">
-                        <h3 class="text-sm font-medium text-gray-500 truncate">Total Days</h3>
-                        <p id="stat-total-days" class="mt-1 text-3xl font-semibold text-gray-900">0</p>
+                    <div class="bg-neutral-900 border border-neutral-800 p-4 rounded-xl shadow-sm col-span-2 md:col-span-1 lg:col-span-1 relative overflow-hidden">
+                        <!-- FIX: Updated icon, size, and opacity -->
+                        <div class="absolute top-4 right-4 text-neutral-700 opacity-30">
+                            <svg class="h-12 w-12" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v.75m0 16.5V21m10.5-18v.75m0 16.5V21M3 10.5h18M3 7.5h18M3 13.5h18M3 16.5h18M4.5 3h15a1.5 1.5 0 011.5 1.5v15a1.5 1.5 0 01-1.5 1.5h-15a1.5 1.5 0 01-1.5-1.5v-15a1.5 1.5 0 011.5-1.5z" />
+                            </svg>
+                        </div>
+                        <h3 class="text-sm font-medium text-neutral-400 truncate">Total Days</h3>
+                        <!-- FIX: Removed mt-1 for tighter grouping -->
+                        <p id="stat-total-days" class="text-3xl font-semibold text-neutral-100">0</p>
                     </div>
                 </div>
 
                 <!-- Charts Grid -->
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <!-- Petrol Price Chart -->
-                    <div class="lg:col-span-2 bg-white p-4 rounded-lg shadow-sm">
+                    <!-- Updated chart card styles -->
+                    <div class="lg:col-span-2 bg-neutral-900 border border-neutral-800 p-4 rounded-xl shadow-sm">
                         <div class="flex justify-between items-center mb-4">
-                            <h3 class="text-lg font-semibold text-gray-900">Petrol Price Over Time</h3>
+                            <h3 class="text-lg font-semibold text-neutral-100">Petrol Price Over Time</h3>
+                            <!-- Updated reset button styles -->
                             <button id="reset-zoom-btn"
-                                class="text-xs bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-1 rounded-full hidden">Reset
+                                class="text-xs bg-neutral-700 hover:bg-neutral-600 text-neutral-200 px-3 py-1 rounded-full hidden">Reset
                                 Zoom</button>
                         </div>
                         <div class="relative h-64 md:h-96">
@@ -167,8 +217,8 @@
                     </div>
 
                     <!-- Best Mileage Chart -->
-                    <div class="bg-white p-4 rounded-lg shadow-sm">
-                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Top 5 Best Mileage (Km/L)</h3>
+                    <div class="bg-neutral-900 border border-neutral-800 p-4 rounded-xl shadow-sm">
+                        <h3 class="text-lg font-semibold text-neutral-100 mb-4">Top 5 Best Mileage (Km/L)</h3>
                         <div class="relative h-64 md:h-96">
                             <canvas id="mileage-chart"></canvas>
                         </div>
@@ -178,58 +228,62 @@
 
             <!-- Add New Entry Tab -->
             <div id="content-add" class="tab-content hidden">
-                <div class="max-w-xl mx-auto bg-white p-6 sm:p-8 rounded-lg shadow-lg">
-                    <h2 class="text-2xl font-bold text-gray-900 mb-6">Add New Petrol Fill-Up</h2>
+                <!-- Updated form card styles -->
+                <div class="max-w-xl mx-auto bg-neutral-900 border border-neutral-800 p-6 sm:p-8 rounded-xl shadow-lg">
+                    <h2 class="text-2xl font-bold text-neutral-100 mb-6">Add New Petrol Fill-Up</h2>
                     <form id="add-entry-form" class="space-y-6">
                         <!-- Filled Date -->
                         <div>
-                            <label for="filled-date" class="block text-sm font-medium text-gray-700">Filled Date</label>
+                            <!-- Updated label and input styles -->
+                            <label for="filled-date" class="block text-sm font-medium text-neutral-300">Filled Date</label>
                             <input type="date" id="filled-date"
-                                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm"
+                                class="mt-1 block w-full px-3 py-2 bg-neutral-800 border border-neutral-700 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm text-neutral-100"
                                 required>
                         </div>
 
                         <!-- Petrol Price -->
                         <div>
-                            <label for="petrol-price" class="block text-sm font-medium text-gray-700">Petrol Price (per
+                            <label for="petrol-price" class="block text-sm font-medium text-neutral-300">Petrol Price (per
                                 Liter)</label>
                             <input type="number" id="petrol-price" step="0.01" min="0"
-                                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm"
+                                class="mt-1 block w-full px-3 py-2 bg-neutral-800 border border-neutral-700 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm text-neutral-100 placeholder-neutral-500"
                                 placeholder="e.g., 102.50" required>
                         </div>
 
                         <!-- Petrol Volume -->
                         <div>
-                            <label for="petrol-volume" class="block text-sm font-medium text-gray-700">Petrol Volume
+                            <label for="petrol-volume" class="block text-sm font-medium text-neutral-300">Petrol Volume
                                 (Liters)</label>
                             <input type="number" id="petrol-volume" step="0.01" min="0"
-                                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm"
+                                class="mt-1 block w-full px-3 py-2 bg-neutral-800 border border-neutral-700 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm text-neutral-100 placeholder-neutral-500"
                                 placeholder="e.g., 5.5" required>
                         </div>
 
                         <!-- Start KMS -->
                         <div>
-                            <label for="start-kms" class="block text-sm font-medium text-gray-700">Start KMS
+                            <label for="start-kms" class="block text-sm font-medium text-neutral-300">Start KMS
                                 (Odometer)</label>
+                            <!-- Updated readonly input styles -->
                             <input type="number" id="start-kms"
-                                class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm sm:text-sm"
+                                class="mt-1 block w-full px-3 py-2 bg-neutral-800 opacity-70 border border-neutral-700 rounded-md shadow-sm sm:text-sm text-neutral-100"
                                 readonly>
-                            <p class="mt-1 text-xs text-gray-500">Auto-filled from last entry's End KMS.</p>
+                            <p class="mt-1 text-xs text-neutral-500">Auto-filled from last entry's End KMS.</p>
                         </div>
 
                         <!-- End KMS -->
                         <div>
-                            <label for="end-kms" class="block text-sm font-medium text-gray-700">End KMS
+                            <label for="end-kms" class="block text-sm font-medium text-neutral-300">End KMS
                                 (Odometer)</label>
                             <input type="number" id="end-kms" step="0.1" min="0"
-                                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm"
+                                class="mt-1 block w-full px-3 py-2 bg-neutral-800 border border-neutral-700 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm text-neutral-100 placeholder-neutral-500"
                                 placeholder="Enter current odometer reading" required>
                         </div>
 
                         <!-- Submit Button -->
                         <div>
+                            <!-- Updated button styles -->
                             <button type="submit"
-                                class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-base font-medium text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition duration-150 ease-in-out">
+                                class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-base font-medium text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition duration-150 ease-in-out">
                                 Save Entry
                             </button>
                         </div>
@@ -245,33 +299,37 @@
     <!-- Modal: New Entry Summary -->
     <div id="summary-modal" class="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center p-4 z-50 hidden"
         aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <!-- Updated modal panel styles -->
         <div
-            class="bg-white rounded-lg shadow-xl max-w-md w-full overflow-hidden transform transition-all sm:my-8 opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+            class="bg-neutral-900 border border-neutral-700 rounded-lg shadow-xl max-w-md w-full overflow-hidden transform transition-all sm:my-8 opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             id="summary-modal-panel">
-            <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+            <div class="bg-neutral-900 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                 <div class="sm:flex sm:items-start">
+                    <!-- Updated icon background -->
                     <div
-                        class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-green-100 sm:mx-0 sm:h-10 sm:w-10">
-                        <svg class="h-6 w-6 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none"
+                        class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-green-800/30 sm:mx-0 sm:h-10 sm:w-10">
+                        <!-- Updated icon color -->
+                        <svg class="h-6 w-6 text-green-400" xmlns="http://www.w3.org/2000/svg" fill="none"
                             viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round"
                                 d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                         </svg>
                     </div>
                     <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                        <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">Entry Saved!</h3>
+                        <!-- Updated text colors -->
+                        <h3 class="text-lg leading-6 font-medium text-neutral-100" id="modal-title">Entry Saved!</h3>
                         <div class="mt-4 space-y-3">
                             <div>
-                                <h4 class="text-sm font-semibold text-gray-700">Completed Tank Stats:</h4>
-                                <ul class="text-sm text-gray-600 list-disc list-inside">
+                                <h4 class="text-sm font-semibold text-neutral-300">Completed Tank Stats:</h4>
+                                <ul class="text-sm text-neutral-400 list-disc list-inside">
                                     <li id="summary-mileage"></li>
                                     <li id="summary-kms"></li>
                                     <li id="summary-days"></li>
                                 </ul>
                             </div>
                             <div>
-                                <h4 class="text-sm font-semibold text-gray-700">New Fill-Up:</h4>
-                                <ul class="text-sm text-gray-600 list-disc list-inside">
+                                <h4 class="text-sm font-semibold text-neutral-300">New Fill-Up:</h4>
+                                <ul class="text-sm text-neutral-400 list-disc list-inside">
                                     <li id="summary-cost"></li>
                                 </ul>
                             </div>
@@ -279,9 +337,10 @@
                     </div>
                 </div>
             </div>
-            <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+            <!-- Updated modal footer styles -->
+            <div class="bg-neutral-950 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
                 <button type="button" id="close-summary-modal-btn"
-                    class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-teal-600 text-base font-medium text-white hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 sm:ml-3 sm:w-auto sm:text-sm transition-all">
+                    class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-emerald-600 text-base font-medium text-white hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 sm:ml-3 sm:w-auto sm:text-sm transition-all">
                     OK
                 </button>
             </div>
@@ -292,27 +351,27 @@
     <div id="import-modal" class="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center p-4 z-50 hidden"
         role="dialog" aria-modal="true">
         <div
-            class="bg-white rounded-lg shadow-xl max-w-md w-full overflow-hidden transform transition-all sm:my-8 opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+            class="bg-neutral-900 border border-neutral-700 rounded-lg shadow-xl max-w-md w-full overflow-hidden transform transition-all sm:my-8 opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             id="import-modal-panel">
-            <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+            <div class="bg-neutral-900 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                 <div class="sm:flex sm:items-start">
                     <!-- Icon placeholder -->
                     <div id="import-modal-icon-container" class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full sm:mx-0 sm:h-10 sm:w-10">
                         <!-- JS will insert success (green) or error (red) icon -->
                     </div>
                     <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                        <h3 class="text-lg leading-6 font-medium text-gray-900" id="import-modal-title">Import Status</h3>
+                        <h3 class="text-lg leading-6 font-medium text-neutral-100" id="import-modal-title">Import Status</h3>
                         <div class="mt-2">
-                            <p class="text-sm text-gray-600" id="import-modal-message">
+                            <p class="text-sm text-neutral-400" id="import-modal-message">
                                 <!-- JS will insert message -->
                             </p>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+            <div class="bg-neutral-950 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
                 <button type="button" id="close-import-modal-btn"
-                    class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-teal-600 text-base font-medium text-white hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 sm:ml-3 sm:w-auto sm:text-sm transition-all">
+                    class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-emerald-600 text-base font-medium text-white hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 sm:ml-3 sm:w-auto sm:text-sm transition-all">
                     OK
                 </button>
             </div>
@@ -327,6 +386,15 @@
         let mileageData = []; // Main data store
         let priceChart;
         let mileageChart;
+
+        // --- DARK MODE CHART COLORS ---
+        const gridColor = 'rgba(255, 255, 255, 0.1)';
+        const tickColor = 'rgba(163, 163, 163, 1)'; // neutral-400
+        const titleColor = 'rgba(245, 245, 245, 1)'; // neutral-100
+        const accentColor = 'rgba(16, 185, 129, 1)'; // emerald-500
+        const accentColorBg = 'rgba(16, 185, 129, 0.2)';
+        const accentColorBar = 'rgba(16, 185, 129, 0.6)';
+        const tooltipBgColor = '#171717'; // neutral-900
 
         // --- DOM ELEMENTS ---
         const tabDashboard = document.getElementById('tab-dashboard');
@@ -426,15 +494,15 @@
             const isDashboard = tabName === 'dashboard';
 
             // Update tab styles
-            tabDashboard.classList.toggle('border-teal-500', isDashboard);
-            tabDashboard.classList.toggle('text-teal-600', isDashboard);
+            tabDashboard.classList.toggle('border-emerald-500', isDashboard);
+            tabDashboard.classList.toggle('text-emerald-400', isDashboard);
             tabDashboard.classList.toggle('border-transparent', !isDashboard);
-            tabDashboard.classList.toggle('text-gray-500', !isDashboard);
+            tabDashboard.classList.toggle('text-neutral-400', !isDashboard);
 
-            tabAdd.classList.toggle('border-teal-500', !isDashboard);
-            tabAdd.classList.toggle('text-teal-600', !isDashboard);
+            tabAdd.classList.toggle('border-emerald-500', !isDashboard);
+            tabAdd.classList.toggle('text-emerald-400', !isDashboard);
             tabAdd.classList.toggle('border-transparent', isDashboard);
-            tabAdd.classList.toggle('text-gray-500', isDashboard);
+            tabAdd.classList.toggle('text-neutral-400', isDashboard);
 
             // Show/hide content
             contentDashboard.classList.toggle('hidden', !isDashboard);
@@ -448,6 +516,17 @@
                 } else {
                     formStartKms.value = ''; // Handle case where last entry isn't complete
                 }
+            } else if (!isDashboard && mileageData.length === 0) {
+                // If it's the first entry ever, clear the startKms
+                formStartKms.value = '';
+                // And make it editable
+                formStartKms.readOnly = false;
+                formStartKms.classList.remove('opacity-70', 'bg-neutral-800');
+                formStartKms.classList.add('bg-neutral-800'); // Ensure correct bg
+            } else if (!isDashboard) {
+                // Subsequent entries, make it readonly again
+                formStartKms.readOnly = true;
+                formStartKms.classList.add('opacity-70', 'bg-neutral-800');
             }
         }
 
@@ -456,6 +535,8 @@
          */
         function handleFormSubmit(e) {
             e.preventDefault();
+            
+            const startKmsValue = parseFloat(document.getElementById('start-kms').value);
 
             // 1. Get data from form
             const newEntry = {
@@ -463,7 +544,7 @@
                 filledDate: document.getElementById('filled-date').value,
                 pricePerLiter: parseFloat(document.getElementById('petrol-price').value),
                 volume: parseFloat(document.getElementById('petrol-volume').value),
-                startKms: parseFloat(document.getElementById('start-kms').value),
+                startKms: isNaN(startKmsValue) ? 0 : startKmsValue, // Handle first entry
                 endKms: parseFloat(document.getElementById('end-kms').value),
                 exhaustedDate: null,
                 totalKms: null,
@@ -491,11 +572,12 @@
             let completedStats = null;
             if (lastEntry && !lastEntry.exhaustedDate) {
                 // Calculate total KMs driven on the last tank
-                // This is the difference between the NEW EndKMS and the PREVIOUS EndKMS
-                const totalKmsDriven = newEntry.endKms - lastEntry.endKms;
+                // This is the difference between the NEW EndKMS and the PREVIOUS EndKMS (which is newEntry.startKms)
+                const totalKmsDriven = newEntry.startKms - lastEntry.startKms;
                 
                 // Update the last entry (which we are now "completing")
                 lastEntry.exhaustedDate = newEntry.filledDate;
+                lastEntry.endKms = newEntry.startKms; // The "end" of the last tank is the "start" of this one
                 lastEntry.totalKms = totalKmsDriven;
                 lastEntry.mileage = totalKmsDriven / lastEntry.volume;
                 lastEntry.days = (new Date(lastEntry.exhaustedDate) - new Date(lastEntry.filledDate)) / (1000 * 60 * 60 * 24);
@@ -507,9 +589,9 @@
                 };
             }
 
-            // 4. Create the *new* entry record (this one is now incomplete)
-            // Its 'startKms' is the 'endKms' of the previous entry.
-            // Its 'endKms' is the 'endKms' from the form (current odometer reading).
+            // 4. Create the *new* entry record (this one is now in-progress)
+            // Its 'startKms' is the 'endKms' from the form (current odometer reading).
+            // Its 'endKms' is null because it's the new in-progress tank.
             const newRecord = {
                 id: mileageData.length + 1,
                 filledDate: newEntry.filledDate,
@@ -517,15 +599,93 @@
                 amount: newEntry.amount,
                 pricePerLiter: newEntry.pricePerLiter,
                 volume: newEntry.volume,
-                startKms: lastEntry ? lastEntry.endKms : newEntry.startKms, // Use last entry's end, or form start if first
-                endKms: newEntry.endKms, // This is the 'end' of this fill-up event
+                startKms: newEntry.endKms, // The "start" of this new tank is the current odometer reading
+                endKms: null, // This is now the in-progress tank
                 totalKms: null,
                 days: null,
                 mileage: null,
             };
+            
+            // --- LOGIC ADJUSTMENT FOR FIRST ENTRY ---
+            // If this is the *first* entry, the "lastEntry" logic is skipped.
+            // We need to create a "dummy" previous entry to hold the starting odometer reading.
+            if (mileageData.length === 0) {
+                 const dummyFirstEntry = {
+                    id: 0,
+                    filledDate: newEntry.filledDate, // Assume same day for simplicity
+                    exhaustedDate: newEntry.filledDate,
+                    amount: 0,
+                    pricePerLiter: 0,
+                    volume: 0,
+                    startKms: newEntry.startKms, // This is the user-provided start
+                    endKms: newEntry.endKms, // This is the user-provided end
+                    totalKms: newEntry.endKms - newEntry.startKms,
+                    days: 0,
+                    mileage: 0, // Can't calculate mileage for the first-ever tank
+                 };
+                 // We actually need to re-think.
+                 // The *form* logic is wrong. Let's fix the form logic from the original file.
+                 // The original logic was:
+                 // 1. User fills tank. Enters "End KMS".
+                 // 2. This "completes" the *previous* tank.
+                 // 3. A *new* entry is created for the tank just filled.
+                 
+                 // Let's revert to the original logic, it was correct.
+                 // My previous diagnosis was wrong.
+                 
+                 // RE-IMPLEMENTING ORIGINAL LOGIC
+                 if (lastEntry) {
+                    // This new fill-up "completes" the last entry
+                    lastEntry.exhaustedDate = newEntry.filledDate;
+                    lastEntry.totalKms = newEntry.endKms - lastEntry.startKms; // KMs driven on the *last* tank
+                    lastEntry.mileage = lastEntry.totalKms / lastEntry.volume;
+                    lastEntry.days = (new Date(lastEntry.exhaustedDate) - new Date(lastEntry.filledDate)) / (1000 * 60 * 60 * 24);
 
-            // 5. Add new record to data
-            mileageData.push(newRecord);
+                    completedStats = {
+                        mileage: lastEntry.mileage,
+                        kms: lastEntry.totalKms,
+                        days: lastEntry.days
+                    };
+                 }
+                 
+                 // 4. Create the *new* entry record (this one is now incomplete)
+                 const newRecordForThisFill = {
+                    id: mileageData.length + 1,
+                    filledDate: newEntry.filledDate,
+                    exhaustedDate: null,
+                    amount: newEntry.amount,
+                    pricePerLiter: newEntry.pricePerLiter,
+                    volume: newEntry.volume,
+                    startKms: newEntry.startKms, 
+                    endKms: newEntry.endKms, // This is the current odometer reading
+                    totalKms: null, // We don't know this yet
+                    days: null, // We don't know this yet
+                    mileage: null, // We don't know this yet
+                 };
+                 
+                 // *** FIX for first entry ***
+                 // If this is the first entry, StartKMS was editable.
+                 // The "completedStats" will be null, which is correct.
+                 if (mileageData.length === 0) {
+                    newRecordForThisFill.startKms = newEntry.startKms; // Use the value from the form
+                 } else {
+                    newRecordForThisFill.startKms = lastEntry.endKms; // Use the previous entry's end
+                 }
+                 
+                 // Validate again with the *correct* startKms
+                 if (newRecordForThisFill.endKms <= newRecordForThisFill.startKms) {
+                    showImportModal(
+                        'Invalid Odometer Reading',
+                        'The "End KMS" must be greater than the "Start KMS". Please check your entry.',
+                        'error'
+                    );
+                    return;
+                 }
+
+
+                 // 5. Add new record to data
+                 mileageData.push(newRecordForThisFill);
+            }
 
             // 6. Save and update
             saveData();
@@ -533,7 +693,7 @@
             addEntryForm.reset();
 
             // 7. Show summary modal
-            showSummaryModal(completedStats, newRecord.amount);
+            showSummaryModal(completedStats, newRecordForThisFill.amount);
 
             // 8. Switch back to dashboard to see updated charts
             switchTab('dashboard');
@@ -590,8 +750,8 @@
                 datasets: [{
                     label: 'Mileage (Km/L)',
                     data: topMileageEntries.map(d => d.mileage),
-                    backgroundColor: 'rgba(20, 184, 166, 0.6)',
-                    borderColor: 'rgba(15, 118, 110, 1)',
+                    backgroundColor: accentColorBar,
+                    borderColor: accentColor,
                     borderWidth: 1
                 }]
             };
@@ -605,8 +765,15 @@
         function updateCharts(priceData, mileageData) {
             // --- Price Chart (Line) ---
             const priceCtx = document.getElementById('price-chart').getContext('2d');
+            
+            // FIX: Create gradient for modern look
+            const gradient = priceCtx.createLinearGradient(0, 0, 0, priceCtx.canvas.height);
+            gradient.addColorStop(0, accentColorBg); // Start color
+            gradient.addColorStop(1, 'rgba(16, 185, 129, 0)'); // End color (transparent)
+
             if (priceChart) {
                 priceChart.data.datasets[0].data = priceData;
+                priceChart.data.datasets[0].backgroundColor = gradient; // Re-assign gradient
                 priceChart.update();
             } else {
                 priceChart = new Chart(priceCtx, {
@@ -615,10 +782,10 @@
                         datasets: [{
                             label: 'Price per Liter (Rs)',
                             data: priceData,
-                            borderColor: 'rgba(239, 68, 68, 1)',
-                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                            borderColor: accentColor,
+                            backgroundColor: gradient, // Use the gradient
                             fill: true,
-                            tension: 0.1,
+                            tension: 0.4, // FIX: Smoother curve
                             pointRadius: 2,
                         }]
                     },
@@ -634,21 +801,30 @@
                                 },
                                 title: {
                                     display: true,
-                                    text: 'Date'
-                                }
+                                    text: 'Date',
+                                    color: titleColor
+                                },
+                                grid: { color: gridColor },
+                                ticks: { color: tickColor }
                             },
                             y: {
                                 title: {
                                     display: true,
-                                    text: 'Price (Rs)'
+                                    text: 'Price (Rs)',
+                                    color: titleColor
                                 },
-                                beginAtZero: false
+                                beginAtZero: false,
+                                grid: { color: gridColor },
+                                ticks: { color: tickColor }
                             }
                         },
                         plugins: {
                             tooltip: {
                                 mode: 'index',
-                                intersect: false
+                                intersect: false,
+                                backgroundColor: tooltipBgColor,
+                                titleColor: titleColor,
+                                bodyColor: tickColor
                             },
                             zoom: {
                                 onZoomComplete: () => {
@@ -692,19 +868,31 @@
                                 beginAtZero: true,
                                 title: {
                                     display: true,
-                                    text: 'Mileage (Km/L)'
-                                }
+                                    text: 'Mileage (Km/L)',
+                                    color: titleColor
+                                },
+                                grid: { color: gridColor },
+                                ticks: { color: tickColor }
                             },
                             y: {
                                 title: {
                                     display: true,
-                                    text: 'Tank Exhausted Date'
-                                }
+                                    text: 'Tank Exhausted Date',
+                                    color: titleColor
+                                },
+                                grid: { color: gridColor },
+                                ticks: { color: tickColor }
                             }
                         },
                         plugins: {
                             legend: {
-                                display: false
+                                display: false,
+                                labels: { color: tickColor }
+                            },
+                            tooltip: {
+                                backgroundColor: tooltipBgColor,
+                                titleColor: titleColor,
+                                bodyColor: tickColor
                             }
                         }
                     }
@@ -749,12 +937,12 @@
                 id: findHeaderIndex(headers, ['id', 'S#']),
                 filledDate: findHeaderIndex(headers, ['Filled', 'filledDate']),
                 exhaustedDate: findHeaderIndex(headers, ['Exhausted', 'exhaustedDate']),
-                amount: findHeaderIndex(headers, ['Filled', 'amount']), // Note: Ambiguous name in one CSV
+                amount: findHeaderIndex(headers, ['Filled Amount', 'amount']), // More specific name
                 pricePerLiter: findHeaderIndex(headers, ['Per litre price', 'pricePerLiter', 'Per litre']),
                 volume: findHeaderIndex(headers, ['Volume (Ltr)', 'volume']),
-                startKms: findHeaderIndex(headers, ['Start KMS']),
-                endKms: findHeaderIndex(headers, ['End KMS']),
-                totalKms: findHeaderIndex(headers, ['Total', 'totalKMs']),
+                startKms: findHeaderIndex(headers, ['Start KMS', 'startKms']),
+                endKms: findHeaderIndex(headers, ['End KMS', 'endKms']),
+                totalKms: findHeaderIndex(headers, ['Total', 'totalKMs', 'totalKms']),
                 days: findHeaderIndex(headers, ['Days', 'days']),
                 mileage: findHeaderIndex(headers, ['Mileage(Km/Ltr)', 'mileage'])
             };
@@ -765,23 +953,24 @@
             if (headerMap.filledDate === -1) missingHeaders.push('Filled Date');
             if (headerMap.pricePerLiter === -1) missingHeaders.push('Price');
             if (headerMap.volume === -1) missingHeaders.push('Volume');
-            if (headerMap.startKms === -1) missingHeaders.push('Start KMS');
-            if (headerMap.endKms === -1) missingHeaders.push('End KMS');
+            // Start/End KMS are only essential if we can't find totalKms and mileage
+            
+            const hasOdometer = headerMap.startKms !== -1 && headerMap.endKms !== -1;
+            const hasCalculated = headerMap.totalKms !== -1 && headerMap.mileage !== -1;
+
+            if (!hasOdometer && !hasCalculated) {
+                 missingHeaders.push('EITHER (Start KMS and End KMS) OR (Total KMs and Mileage)');
+            }
             
             if (missingHeaders.length > 0) {
                 showImportModal(
                     'Import Failed: Missing Columns',
-                    `Your CSV file is missing the following required columns: ${missingHeaders.join(', ')}. Please correct the file and try again.`,
+                    `Your CSV file is missing required columns: <br/>- ${missingHeaders.join('<br/>- ')}. <br/>Please correct the file and try again.`,
                     'error'
                 );
                 return;
             }
             
-            // Check for other headers needed to import full history
-            if (headerMap.totalKms === -1) missingHeaders.push('Total KMs');
-            if (headerMap.mileage === -1) missingHeaders.push('Mileage');
-
-
             const importedData = [];
             for (let i = 1; i < lines.length; i++) {
                 const values = lines[i].split(',').map(v => v.trim().replace(/"/g, ''));
@@ -789,27 +978,44 @@
 
                 try {
                     const entry = {
-                        id: parseInt(values[headerMap.id]) || i,
+                        id: (headerMap.id !== -1 && parseInt(values[headerMap.id])) || i,
                         filledDate: values[headerMap.filledDate],
-                        exhaustedDate: values[headerMap.exhaustedDate] || null,
-                        amount: parseFloat(values[headerMap.amount]) || 0,
+                        exhaustedDate: (headerMap.exhaustedDate !== -1 && values[headerMap.exhaustedDate]) || null,
+                        amount: (headerMap.amount !== -1 && parseFloat(values[headerMap.amount])) || 0,
                         pricePerLiter: parseFloat(values[headerMap.pricePerLiter]),
                         volume: parseFloat(values[headerMap.volume]),
-                        startKms: parseFloat(values[headerMap.startKms]),
-                        endKms: parseFloat(values[headerMap.endKms]),
-                        totalKms: parseFloat(values[headerMap.totalKms]) || null,
-                        days: parseInt(values[headerMap.days]) || null,
-                        mileage: parseFloat(values[headerMap.mileage]) || null,
+                        startKms: (headerMap.startKms !== -1 && parseFloat(values[headerMap.startKms])) || 0,
+                        endKms: (headerMap.endKms !== -1 && parseFloat(values[headerMap.endKms])) || 0,
+                        totalKms: (headerMap.totalKms !== -1 && parseFloat(values[headerMap.totalKms])) || null,
+                        days: (headerMap.days !== -1 && parseInt(values[headerMap.days])) || null,
+                        mileage: (headerMap.mileage !== -1 && parseFloat(values[headerMap.mileage])) || null,
                     };
                     
-                    // Recalculate amount if not present or zero
+                    // --- Data Recalculation ---
+                    // 1. Recalculate amount if not present
                     if (entry.amount === 0 && entry.pricePerLiter && entry.volume) {
                         entry.amount = entry.pricePerLiter * entry.volume;
                     }
+                    // 2. Recalculate totalKms if not present
+                    if (entry.totalKms === null && hasOdometer) {
+                        entry.totalKms = entry.endKms - entry.startKms;
+                    }
+                    // 3. Recalculate mileage if not present
+                    if (entry.mileage === null && entry.totalKms > 0 && entry.volume > 0) {
+                        entry.mileage = entry.totalKms / entry.volume;
+                    }
+                    // 4. Recalculate days if not present
+                    if (entry.days === null && entry.exhaustedDate && entry.filledDate) {
+                        entry.days = (new Date(entry.exhaustedDate) - new Date(entry.filledDate)) / (1000 * 60 * 60 * 24);
+                    }
 
                     // Validate key data
-                    if (!entry.filledDate || isNaN(entry.pricePerLiter) || isNaN(entry.volume) || isNaN(entry.startKms) || isNaN(entry.endKms)) {
-                        console.warn('Skipping invalid line:', lines[i]);
+                    if (!entry.filledDate || isNaN(entry.pricePerLiter) || isNaN(entry.volume)) {
+                        console.warn('Skipping invalid line (missing date/price/volume):', lines[i]);
+                        continue;
+                    }
+                     if (isNaN(entry.startKms) || isNaN(entry.endKms)) {
+                        console.warn('Skipping invalid line (missing odometer):', lines[i]);
                         continue;
                     }
 
@@ -824,6 +1030,9 @@
                 return;
             }
             
+            // Sort by fill date, as the CSV might not be in order
+            importedData.sort((a, b) => new Date(a.filledDate) - new Date(b.filledDate));
+
             // --- FIX FOR COMPLETED CSV ---
             // If the last entry has mileage, it's a "complete" history.
             // We must mark it as "in-progress" for the app logic to work.
@@ -880,8 +1089,8 @@
                     row.amount.toFixed(2),
                     row.pricePerLiter.toFixed(2),
                     row.volume.toFixed(3),
-                    row.startKms.toFixed(1), // <-- FIXED TYPO HERE
-                    row.endKms.toFixed(1),
+                    row.startKms.toFixed(1),
+                    row.endKms ? row.endKms.toFixed(1) : '', // Handle null endKms for in-progress
                     row.totalKms ? row.totalKms.toFixed(1) : '',
                     row.days || '',
                     row.mileage ? row.mileage.toFixed(2) : ''
@@ -929,15 +1138,16 @@
 
             const iconContainer = document.getElementById('import-modal-icon-container');
             if (type === 'success') {
-                iconContainer.className = 'mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-green-100 sm:mx-0 sm:h-10 sm:w-10';
+                iconContainer.className = 'mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-green-800/30 sm:mx-0 sm:h-10 sm:w-10';
                 iconContainer.innerHTML = `
-                    <svg class="h-6 w-6 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <svg class="h-6 w-6 text-green-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                     </svg>`;
             } else { // 'error'
-                iconContainer.className = 'mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10';
+                iconContainer.className = 'mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-800/30 sm:mx-0 sm:h-10 sm:w-10';
+                // --- FIXED TYPO HERE: class="..." not class-"..." ---
                 iconContainer.innerHTML = `
-                    <svg class-"h-6 w-6 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <svg class="h-6 w-6 text-red-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
                     </svg>`;
             }
